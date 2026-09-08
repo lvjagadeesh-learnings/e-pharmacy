@@ -128,6 +128,21 @@ public class AuthEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         body.GetProperty("displayName").GetString().Should().Be("Ada Shopper");
     }
 
+    [Fact]
+    public async Task POST_logout_clears_the_session_so_me_returns_401_afterwards()
+    {
+        var client = _factory.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = true });
+        var email = $"{Guid.NewGuid()}@example.com";
+        await client.PostAsJsonAsync("/api/auth/register", new RegisterRequest(email, "s3cret-password!", "Ada Shopper"));
+        await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(email, "s3cret-password!"));
+
+        var logoutResponse = await client.PostAsync("/api/auth/logout", null);
+        logoutResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var meResponse = await client.GetAsync("/api/auth/me");
+        meResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
     private sealed record RegisterRequest(string Email, string Password, string DisplayName);
 
     private sealed record LoginRequest(string Email, string Password);

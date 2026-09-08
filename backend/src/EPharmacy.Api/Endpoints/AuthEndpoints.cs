@@ -75,6 +75,14 @@ public static class AuthEndpoints
         .RequireAuthorization()
         .WithName("GetCurrentUser");
 
+        app.MapPost("/api/auth/logout", async (HttpContext httpContext) =>
+        {
+            await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Results.Ok();
+        })
+        .RequireAuthorization()
+        .WithName("LogoutUser");
+
         return app;
     }
 
