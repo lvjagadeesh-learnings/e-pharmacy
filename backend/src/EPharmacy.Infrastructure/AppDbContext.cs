@@ -17,6 +17,8 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<Cart> Carts => Set<Cart>();
 
+    public DbSet<Order> Orders => Set<Order>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<HealthCheck>(entity =>
@@ -59,6 +61,28 @@ public sealed class AppDbContext : DbContext
             });
 
             entity.Navigation(c => c.Items).HasField("_items").UsePropertyAccessMode(PropertyAccessMode.Field);
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(o => o.Id);
+            entity.Property(o => o.UserId).IsRequired();
+            entity.HasIndex(o => o.UserId);
+            entity.Property(o => o.ShippingAddress).IsRequired();
+            entity.Property(o => o.PlacedAtUtc).IsRequired();
+            entity.Ignore(o => o.TotalCents);
+
+            entity.OwnsMany(o => o.Items, itemsBuilder =>
+            {
+                itemsBuilder.WithOwner().HasForeignKey("OrderId");
+                itemsBuilder.Property(i => i.MedicineId).IsRequired();
+                itemsBuilder.Property(i => i.Name).IsRequired();
+                itemsBuilder.Property(i => i.UnitPriceCents).IsRequired();
+                itemsBuilder.Property(i => i.Quantity).IsRequired();
+                itemsBuilder.HasKey("OrderId", "MedicineId");
+            });
+
+            entity.Navigation(o => o.Items).HasField("_items").UsePropertyAccessMode(PropertyAccessMode.Field);
         });
     }
 }

@@ -31,6 +31,10 @@ builder.Services.AddScoped<GetCartHandler>();
 builder.Services.AddScoped<UpdateCartItemHandler>();
 builder.Services.AddScoped<RemoveCartItemHandler>();
 
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IPaymentGateway, FakePaymentGateway>();
+builder.Services.AddScoped<PlaceOrderHandler>();
+
 // Cookie auth, not JWT: a same-origin SPA (via the Vite dev proxy) doesn't
 // need bearer tokens, and cookies let the browser handle session storage.
 // API redirects (401/403) are returned instead of the default login-page
@@ -100,6 +104,7 @@ app.MapGet("/health", async (RecordHealthCheckHandler handler, CancellationToken
 app.MapAuthEndpoints();
 app.MapCatalogEndpoints();
 app.MapCartEndpoints();
+app.MapOrderEndpoints();
 
 app.Run();
 
