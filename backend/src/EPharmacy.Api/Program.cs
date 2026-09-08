@@ -19,6 +19,7 @@ builder.Services.AddScoped<RecordHealthCheckHandler>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<RegisterUserHandler>();
+builder.Services.AddScoped<AuthenticateUserHandler>();
 
 // Cookie auth, not JWT: a same-origin SPA (via the Vite dev proxy) doesn't
 // need bearer tokens, and cookies let the browser handle session storage.
