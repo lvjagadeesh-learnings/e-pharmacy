@@ -3,7 +3,9 @@ import { useHealthStatus } from './api/useHealthStatus'
 import HealthBanner from './components/HealthBanner'
 import RequireAuth from './components/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
+import { CartProvider } from './context/CartContext'
 import { useAuth } from './context/useAuth'
+import { useCart } from './context/useCart'
 import AccountPage from './pages/AccountPage'
 import CatalogPage from './pages/CatalogPage'
 import LoginPage from './pages/LoginPage'
@@ -12,6 +14,7 @@ import './App.css'
 
 function AppHeader() {
   const { user, logout } = useAuth()
+  const { itemCount } = useCart()
   const navigate = useNavigate()
 
   async function handleLogout() {
@@ -24,9 +27,12 @@ function AppHeader() {
       <h1>e-Pharmacy</h1>
       <p>Your trusted online pharmacy</p>
       {user && (
-        <button type="button" onClick={handleLogout}>
-          Log out
-        </button>
+        <>
+          <span data-testid="cart-badge">Cart ({itemCount})</span>
+          <button type="button" onClick={handleLogout}>
+            Log out
+          </button>
+        </>
       )}
     </header>
   )
@@ -37,24 +43,26 @@ function App() {
 
   return (
     <AuthProvider>
-      <AppHeader />
+      <CartProvider>
+        <AppHeader />
 
-      <main id="app-main">
-        <HealthBanner status={healthStatus} />
-        <Routes>
-          <Route path="/" element={<CatalogPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/account"
-            element={
-              <RequireAuth>
-                <AccountPage />
-              </RequireAuth>
-            }
-          />
-        </Routes>
-      </main>
+        <main id="app-main">
+          <HealthBanner status={healthStatus} />
+          <Routes>
+            <Route path="/" element={<CatalogPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/account"
+              element={
+                <RequireAuth>
+                  <AccountPage />
+                </RequireAuth>
+              }
+            />
+          </Routes>
+        </main>
+      </CartProvider>
     </AuthProvider>
   )
 }

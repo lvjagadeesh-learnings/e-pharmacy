@@ -20,6 +20,9 @@ function mockFetch({ authenticated = false } = {}) {
     if (url === '/api/medicines') {
       return Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
     }
+    if (url === '/api/cart/summary') {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({ itemCount: 0 }) })
+    }
     return Promise.resolve({
       ok: true,
       json: () => Promise.resolve({ status: 'healthy', checkedAtUtc: '2026-01-01T00:00:00Z' }),
