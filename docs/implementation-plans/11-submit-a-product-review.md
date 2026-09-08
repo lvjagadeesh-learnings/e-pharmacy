@@ -74,48 +74,54 @@ frontend/src/
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Domain/Review.cs` — new entity + `Create` factory
-- [ ] `backend/tests/EPharmacy.Domain.Tests/ReviewTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Application/IReviewRepository.cs` — new port
-- [ ] `backend/src/EPharmacy.Application/IUserRepository.cs` — add `FindByIdAsync(Guid id, CancellationToken)`
-- [ ] `backend/src/EPharmacy.Application/SubmitReviewHandler.cs` — new handler + result type
-- [ ] `backend/src/EPharmacy.Application/ListReviewsForMedicineHandler.cs` — new handler
-- [ ] `backend/src/EPharmacy.Application/ListMedicinesHandler.cs` — extend to merge rating summaries
-- [ ] `backend/tests/EPharmacy.Application.Tests/SubmitReviewHandlerTests.cs` — new, written first (TDD)
-- [ ] `backend/tests/EPharmacy.Application.Tests/ListMedicinesHandlerTests.cs` — extend
-- [ ] `backend/src/EPharmacy.Infrastructure/ReviewRepository.cs` — new, implements `IReviewRepository`
-- [ ] `backend/src/EPharmacy.Infrastructure/UserRepository.cs` — implement `FindByIdAsync`
-- [ ] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `DbSet<Review> Reviews`
-- [ ] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddReviews.cs` — new EF Core migration
-- [ ] `backend/src/EPharmacy.Api/Endpoints/CatalogEndpoints.cs` — add `GET /api/medicines/{medicineId}/reviews` (public), `POST /api/medicines/{medicineId}/reviews` (`.RequireAuthorization()`)
-- [ ] `backend/src/EPharmacy.Api/Program.cs` — DI registrations
-- [ ] `backend/tests/EPharmacy.Api.Tests/CatalogEndpointTests.cs` — extend
-- [ ] `frontend/src/pages/MedicineDetailPage.jsx` — new + `MedicineDetailPage.test.jsx`
-- [ ] `frontend/src/components/MedicineCard.jsx` — add average rating + link; extend `MedicineCard.test.jsx`
-- [ ] `frontend/src/App.jsx` — add `/medicines/:medicineId` route
+- [x] `backend/src/EPharmacy.Domain/Review.cs` — new entity + `Create` factory
+- [x] `backend/tests/EPharmacy.Domain.Tests/ReviewTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Application/IReviewRepository.cs` — new port
+- [x] `backend/src/EPharmacy.Application/IUserRepository.cs` — add `FindByIdAsync(Guid id, CancellationToken)`
+- [x] `backend/src/EPharmacy.Application/SubmitReviewHandler.cs` — new handler + result type
+- [x] `backend/src/EPharmacy.Application/ListReviewsForMedicineHandler.cs` — new handler
+- [x] `backend/src/EPharmacy.Application/ListMedicinesHandler.cs` — extend to merge rating summaries
+- [x] `backend/tests/EPharmacy.Application.Tests/SubmitReviewHandlerTests.cs` — new, written first (TDD)
+- [x] `backend/tests/EPharmacy.Application.Tests/ListMedicinesHandlerTests.cs` — extend
+- [x] `backend/src/EPharmacy.Infrastructure/ReviewRepository.cs` — new, implements `IReviewRepository`
+- [x] `backend/src/EPharmacy.Infrastructure/UserRepository.cs` — implement `FindByIdAsync`
+- [x] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `DbSet<Review> Reviews`
+- [x] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddReviews.cs` — new EF Core migration
+- [x] `backend/src/EPharmacy.Api/Endpoints/CatalogEndpoints.cs` — add `GET /api/medicines/{medicineId}/reviews` (public), `POST /api/medicines/{medicineId}/reviews` (`.RequireAuthorization()`)
+- [x] `backend/src/EPharmacy.Api/Program.cs` — DI registrations
+- [x] `backend/tests/EPharmacy.Api.Tests/CatalogEndpointTests.cs` — extend
+- [x] `frontend/src/pages/MedicineDetailPage.jsx` — new + `MedicineDetailPage.test.jsx`
+- [x] `frontend/src/components/MedicineCard.jsx` — add average rating + link; extend `MedicineCard.test.jsx`
+- [x] `frontend/src/App.jsx` — add `/medicines/:medicineId` route
 
 ## Task Breakdown
 
-1. [ ] Write `ReviewTests.cs` (red): `Create` rejects a rating outside 1–5, an empty comment, an empty reviewer name; happy path sets all properties. Implement `Review.cs` to go green.
-2. [ ] Write `SubmitReviewHandlerTests.cs` (red), mocking all four ports: unknown medicine → `MedicineNotFound`; no `Delivered` order containing the medicine → `NotEligible`; existing review → `AlreadyReviewed`; otherwise persists and returns success. Implement `IReviewRepository`, `IUserRepository.FindByIdAsync`, `SubmitReviewHandler` to go green.
-3. [ ] Extend `ListMedicinesHandlerTests.cs` (red): each `MedicineDto` includes `averageRating`/`reviewCount` from a mocked `IReviewRepository.GetRatingSummariesAsync`, defaulting to `0`/`null` when a medicine has no reviews. Implement the extension to go green.
-4. [ ] Implement `ReviewRepository` (including the batched `GetRatingSummariesAsync`); implement `UserRepository.FindByIdAsync`; add `DbSet<Review> Reviews` + config; generate the `AddReviews` migration.
-5. [ ] Add `GET /api/medicines/{medicineId}/reviews` (public) and `POST /api/medicines/{medicineId}/reviews` (`.RequireAuthorization()`, maps `MedicineNotFound`→`404`, `NotEligible`→`403`, `AlreadyReviewed`→`409`, success→`201`) to `CatalogEndpoints.cs`.
-6. [ ] Extend `CatalogEndpointTests.cs`: submitting a review without a qualifying delivered order returns `403`; submitting twice for the same medicine returns `409` the second time; a qualifying submission returns `201` and then appears in `GET /api/medicines/{medicineId}/reviews`; the catalog list (`GET /api/medicines`) reflects the new average rating.
-7. [ ] Build `MedicineDetailPage.jsx`: shows the medicine's full description, the review list, and — when logged in — a review form; submission errors (`403`/`409`) are shown inline with the server's message. Write `MedicineDetailPage.test.jsx` covering the logged-out (no form), eligible-submission-success, and ineligible/duplicate-error paths.
-8. [ ] Extend `MedicineCard.jsx` with a compact average-rating display and a link to `/medicines/:medicineId`; extend `MedicineCard.test.jsx`.
-9. [ ] Add the `/medicines/:medicineId` route to `App.jsx`.
-10. [ ] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (place an order, wait for it to reach `Delivered` per plan 10's thresholds, submit a review, confirm it appears on the detail page and the catalog card's average rating updates), `node scripts/validate-repository.mjs`.
+1. [x] Write `ReviewTests.cs` (red): `Create` rejects a rating outside 1–5, an empty comment, an empty reviewer name; happy path sets all properties. Implement `Review.cs` to go green.
+2. [x] Write `SubmitReviewHandlerTests.cs` (red), mocking all four ports: unknown medicine → `MedicineNotFound`; no `Delivered` order containing the medicine → `NotEligible`; existing review → `AlreadyReviewed`; otherwise persists and returns success. Implement `IReviewRepository`, `IUserRepository.FindByIdAsync`, `SubmitReviewHandler` to go green.
+3. [x] Extend `ListMedicinesHandlerTests.cs` (red): each `MedicineDto` includes `averageRating`/`reviewCount` from a mocked `IReviewRepository.GetRatingSummariesAsync`, defaulting to `0`/`null` when a medicine has no reviews. Implement the extension to go green.
+4. [x] Implement `ReviewRepository` (including the batched `GetRatingSummariesAsync`); implement `UserRepository.FindByIdAsync`; add `DbSet<Review> Reviews` + config; generate the `AddReviews` migration.
+5. [x] Add `GET /api/medicines/{medicineId}/reviews` (public) and `POST /api/medicines/{medicineId}/reviews` (`.RequireAuthorization()`, maps `MedicineNotFound`→`404`, `NotEligible`→`403`, `AlreadyReviewed`→`409`, success→`201`) to `CatalogEndpoints.cs`.
+6. [x] Extend `CatalogEndpointTests.cs`: submitting a review without a qualifying delivered order returns `403`; submitting twice for the same medicine returns `409` the second time; a qualifying submission returns `201` and then appears in `GET /api/medicines/{medicineId}/reviews`; the catalog list (`GET /api/medicines`) reflects the new average rating.
+7. [x] Build `MedicineDetailPage.jsx`: shows the medicine's full description, the review list, and — when logged in — a review form; submission errors (`403`/`409`) are shown inline with the server's message. Write `MedicineDetailPage.test.jsx` covering the logged-out (no form), eligible-submission-success, and ineligible/duplicate-error paths.
+8. [x] Extend `MedicineCard.jsx` with a compact average-rating display and a link to `/medicines/:medicineId`; extend `MedicineCard.test.jsx`.
+9. [x] Add the `/medicines/:medicineId` route to `App.jsx`.
+10. [x] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (place an order, wait for it to reach `Delivered` per plan 10's thresholds, submit a review, confirm it appears on the detail page and the catalog card's average rating updates), `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
 | Tasks | Commit message | Hash |
 |-------|-----------------|------|
-| 1–2 | `feat(backend): add Review entity and SubmitReviewHandler (TDD)` | |
-| 3 | `feat(backend): add rating summaries to the catalog list (TDD)` | |
-| 4–6 | `feat(backend): add review persistence and endpoints` | |
-| 7–9 | `feat(frontend): add medicine detail page with reviews` | |
+| 1–2 | `feat(backend): add Review entity and SubmitReviewHandler (TDD)` | `c618fd5` |
+| 3–6 | `feat(backend): add review persistence and endpoints` | `23496da` |
+| 7–9 | `feat(frontend): add medicine detail page with reviews` | `3bd7ef9` |
 | 10 | `docs(gen-e2): update story 11 and plan checkboxes` | |
+
+## Deviations
+
+- Tasks 3–6 were combined into a single commit (`23496da`) rather than the plan's original two separate commits, because Task 3's `ListMedicinesHandler` rating-merge change and Task 4's `ReviewRepository`/migration were interdependent for the build to stay green at each intermediate step.
+- `ReviewRepository.ListForMedicineAsync` initially applied `.OrderByDescending(r => r.CreatedAtUtc)` before `.ToListAsync()`, which SQLite's EF Core provider cannot translate (`NotSupportedException` for `DateTimeOffset` in `ORDER BY`). Fixed by materializing with `.ToListAsync()` first, then ordering in-memory.
+- The API test suite's `WebApplicationFactory` runs against a persistent, on-disk SQLite file that is not reset between test runs, so a new test asserting on a specific review needed a GUID-uniquified comment string and `.Single(predicate)` lookup (rather than exact array-length/first-item assertions) to avoid collisions with reviews left over from prior runs against the same seeded medicine.
+- Manual browser smoke test could not be run due to the known OneDrive-sync limitation with long-lived `dotnet run` processes in this workspace (documented in prior session memory); the `WebApplicationFactory`-based `CatalogEndpointTests.cs` coverage (review submission → appears in list → catalog rating updates) serves as the equivalent verification, consistent with how plan 10 handled the same limitation.
 
 ## Acceptance Criteria Mapping
 

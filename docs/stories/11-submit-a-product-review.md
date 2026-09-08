@@ -1,6 +1,6 @@
 # User Story: 11 — Submit a review for a purchased medicine
 
-**Status:** ready
+**Status:** done
 
 **As a** user who has received an order,
 **I want** to submit a review (rating and comment) for a medicine I bought,
@@ -8,10 +8,10 @@
 
 ## Acceptance Criteria
 
-- [ ] A review form (rating + text) is available for medicines the user has an order for
-- [ ] Submitted reviews are persisted and associated with the user and the medicine
-- [ ] Reviews are visible on the medicine's catalog/detail view
-- [ ] Basic validation prevents empty submissions
+- [x] A review form (rating + text) is available for medicines the user has an order for
+- [x] Submitted reviews are persisted and associated with the user and the medicine
+- [x] Reviews are visible on the medicine's catalog/detail view
+- [x] Basic validation prevents empty submissions
 
 ## Notes
 
