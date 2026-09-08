@@ -59,6 +59,14 @@ export function AuthProvider({ children }) {
     return data
   }
 
-  return <AuthContext.Provider value={{ user, loading, register, login }}>{children}</AuthContext.Provider>
+  async function logout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } finally {
+      setUser(null)
+    }
+  }
+
+  return <AuthContext.Provider value={{ user, loading, register, login, logout }}>{children}</AuthContext.Provider>
 }
 
