@@ -27,6 +27,23 @@ public sealed class Order
 
     public DateTimeOffset PlacedAtUtc { get; }
 
+    public DateTimeOffset? ReceivedAtUtc { get; private set; }
+
+    public void MarkReceived(DateTimeOffset nowUtc)
+    {
+        if (ReceivedAtUtc is not null)
+        {
+            throw new InvalidOperationException("Order has already been marked as received.");
+        }
+
+        if (OrderStatusCalculator.Calculate(PlacedAtUtc, nowUtc) != OrderStatus.Delivered)
+        {
+            throw new InvalidOperationException("Order cannot be marked as received before it has been delivered.");
+        }
+
+        ReceivedAtUtc = nowUtc;
+    }
+
     public static Order Create(Guid id, Guid userId, string shippingAddress, IReadOnlyCollection<OrderItem> items, DateTimeOffset placedAtUtc)
     {
         if (id == Guid.Empty)

@@ -51,4 +51,39 @@ public class OrderTests
 
         act.Should().Throw<ArgumentException>();
     }
+
+    [Fact]
+    public void MarkReceived_throws_when_not_yet_delivered()
+    {
+        var placedAtUtc = DateTimeOffset.UtcNow;
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), "1 Example St", new[] { SampleItem }, placedAtUtc);
+
+        var act = () => order.MarkReceived(placedAtUtc.AddSeconds(10));
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void MarkReceived_succeeds_and_sets_ReceivedAtUtc_once_delivered()
+    {
+        var placedAtUtc = DateTimeOffset.UtcNow;
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), "1 Example St", new[] { SampleItem }, placedAtUtc);
+        var receivedAt = placedAtUtc.AddSeconds(200);
+
+        order.MarkReceived(receivedAt);
+
+        order.ReceivedAtUtc.Should().Be(receivedAt);
+    }
+
+    [Fact]
+    public void MarkReceived_throws_when_already_received()
+    {
+        var placedAtUtc = DateTimeOffset.UtcNow;
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), "1 Example St", new[] { SampleItem }, placedAtUtc);
+        order.MarkReceived(placedAtUtc.AddSeconds(200));
+
+        var act = () => order.MarkReceived(placedAtUtc.AddSeconds(210));
+
+        act.Should().Throw<InvalidOperationException>();
+    }
 }
