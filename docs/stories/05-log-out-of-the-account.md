@@ -1,6 +1,6 @@
 # User Story: 05 — Log out of the account
 
-**Status:** ready
+**Status:** done
 
 **As a** logged-in user,
 **I want** to log out,
@@ -8,9 +8,9 @@
 
 ## Acceptance Criteria
 
-- [ ] A visible logout action is available while logged in
-- [ ] Logging out clears the session/auth token and returns the user to a logged-out state
-- [ ] Protected pages redirect to login after logout
+- [x] A visible logout action is available while logged in
+- [x] Logging out clears the session/auth token and returns the user to a logged-out state
+- [x] Protected pages redirect to login after logout
 
 ## Notes
 
