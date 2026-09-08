@@ -27,6 +27,9 @@ builder.Services.AddScoped<ListMedicinesHandler>();
 
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<AddCartItemHandler>();
+builder.Services.AddScoped<GetCartHandler>();
+builder.Services.AddScoped<UpdateCartItemHandler>();
+builder.Services.AddScoped<RemoveCartItemHandler>();
 
 // Cookie auth, not JWT: a same-origin SPA (via the Vite dev proxy) doesn't
 // need bearer tokens, and cookies let the browser handle session storage.

@@ -44,8 +44,52 @@ public static class CartEndpoints
         .RequireAuthorization()
         .WithName("GetCartSummary");
 
+        app.MapGet("/api/cart", async (
+            GetCartHandler handler,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var cart = await handler.HandleAsync(userId, cancellationToken);
+
+            return Results.Ok(cart);
+        })
+        .RequireAuthorization()
+        .WithName("GetCart");
+
+        app.MapPatch("/api/cart/items/{medicineId:guid}", async (
+            Guid medicineId,
+            UpdateCartItemRequest request,
+            UpdateCartItemHandler handler,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await handler.HandleAsync(userId, medicineId, request.Quantity, cancellationToken);
+
+            return Results.NoContent();
+        })
+        .RequireAuthorization()
+        .WithName("UpdateCartItem");
+
+        app.MapDelete("/api/cart/items/{medicineId:guid}", async (
+            Guid medicineId,
+            RemoveCartItemHandler handler,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await handler.HandleAsync(userId, medicineId, cancellationToken);
+
+            return Results.NoContent();
+        })
+        .RequireAuthorization()
+        .WithName("RemoveCartItem");
+
         return app;
     }
 }
 
 public sealed record AddCartItemRequest(Guid MedicineId, int Quantity);
+
+public sealed record UpdateCartItemRequest(int Quantity);
