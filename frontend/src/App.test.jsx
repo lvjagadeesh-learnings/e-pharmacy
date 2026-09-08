@@ -48,6 +48,20 @@ describe('App', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('healthy')
   })
 
+  it('renders a skip-to-main-content link pointing at the main landmark', async () => {
+    vi.stubGlobal('fetch', mockFetch())
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    )
+
+    const skipLink = screen.getByRole('link', { name: /skip to main content/i })
+    expect(skipLink).toHaveAttribute('href', '#app-main')
+    expect(document.getElementById('app-main')).toBeInTheDocument()
+  })
+
   it('shows unavailable when the backend health check fails', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')))
 

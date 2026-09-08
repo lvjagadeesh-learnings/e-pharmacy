@@ -52,9 +52,12 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
+        <a href="#app-main" className="skip-link">
+          Skip to main content
+        </a>
         <AppHeader />
 
-        <main id="app-main">
+        <main id="app-main" tabIndex={-1}>
           <HealthBanner status={healthStatus} />
           <Routes>
             <Route path="/" element={<CatalogPage />} />
