@@ -1,5 +1,6 @@
 using EPharmacy.Api.Endpoints;
 using EPharmacy.Application;
+using EPharmacy.Domain;
 using EPharmacy.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<RegisterUserHandler>();
 builder.Services.AddScoped<AuthenticateUserHandler>();
+
+builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
+builder.Services.AddScoped<ListMedicinesHandler>();
 
 // Cookie auth, not JWT: a same-origin SPA (via the Vite dev proxy) doesn't
 // need bearer tokens, and cookies let the browser handle session storage.
@@ -51,6 +55,22 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
+
+    // Dev-only convenience: seed a fixed set of sample medicines if the
+    // catalog is empty. There is no admin/catalog-management story yet, so
+    // this is the only way sample data gets into a fresh database.
+    if (!dbContext.Medicines.Any())
+    {
+        dbContext.Medicines.AddRange(
+            Medicine.Create(Guid.NewGuid(), "Paracetamol 500mg", "Pain and fever relief tablets, 20 count.", 599, null),
+            Medicine.Create(Guid.NewGuid(), "Ibuprofen 200mg", "Anti-inflammatory pain relief tablets, 24 count.", 749, null),
+            Medicine.Create(Guid.NewGuid(), "Allergy Relief 10mg", "Non-drowsy antihistamine tablets, 30 count.", 899, null),
+            Medicine.Create(Guid.NewGuid(), "Vitamin C 1000mg", "Immune support supplement, 60 tablets.", 1099, null),
+            Medicine.Create(Guid.NewGuid(), "Cough Syrup 100ml", "Soothing relief for dry and chesty coughs.", 649, null),
+            Medicine.Create(Guid.NewGuid(), "Multivitamin Daily", "Complete daily multivitamin, 90 tablets.", 1299, null));
+
+        dbContext.SaveChanges();
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -72,6 +92,7 @@ app.MapGet("/health", async (RecordHealthCheckHandler handler, CancellationToken
 .WithName("GetHealth");
 
 app.MapAuthEndpoints();
+app.MapCatalogEndpoints();
 
 app.Run();
 
