@@ -1,8 +1,11 @@
 import { Route, Routes } from 'react-router-dom'
 import { useHealthStatus } from './api/useHealthStatus'
 import HealthBanner from './components/HealthBanner'
+import RequireAuth from './components/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
+import AccountPage from './pages/AccountPage'
 import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 import './App.css'
 
@@ -21,6 +24,15 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/account"
+            element={
+              <RequireAuth>
+                <AccountPage />
+              </RequireAuth>
+            }
+          />
         </Routes>
       </main>
     </AuthProvider>
