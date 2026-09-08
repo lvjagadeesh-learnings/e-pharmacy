@@ -27,6 +27,18 @@ export function CartProvider({ children }) {
     }
   }, [authLoading, user])
 
+  async function refreshCount() {
+    const response = await fetch('/api/cart/summary')
+    if (!response.ok) {
+      return
+    }
+
+    const data = await response.json().catch(() => null)
+    if (data) {
+      setItemCount(data.itemCount)
+    }
+  }
+
   async function addItem(medicineId, quantity = 1) {
     const response = await fetch('/api/cart/items', {
       method: 'POST',
@@ -44,5 +56,5 @@ export function CartProvider({ children }) {
     return data
   }
 
-  return <CartContext.Provider value={{ itemCount, addItem }}>{children}</CartContext.Provider>
+  return <CartContext.Provider value={{ itemCount, addItem, refreshCount }}>{children}</CartContext.Provider>
 }

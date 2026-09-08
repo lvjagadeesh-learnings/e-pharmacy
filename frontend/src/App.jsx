@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import { Link, Route, Routes, useNavigate } from 'react-router-dom'
 import { useHealthStatus } from './api/useHealthStatus'
 import HealthBanner from './components/HealthBanner'
 import RequireAuth from './components/RequireAuth'
@@ -7,6 +7,7 @@ import { CartProvider } from './context/CartContext'
 import { useAuth } from './context/useAuth'
 import { useCart } from './context/useCart'
 import AccountPage from './pages/AccountPage'
+import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
 import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
@@ -28,7 +29,9 @@ function AppHeader() {
       <p>Your trusted online pharmacy</p>
       {user && (
         <>
-          <span data-testid="cart-badge">Cart ({itemCount})</span>
+          <Link to="/cart" data-testid="cart-badge">
+            Cart ({itemCount})
+          </Link>
           <button type="button" onClick={handleLogout}>
             Log out
           </button>
@@ -57,6 +60,14 @@ function App() {
               element={
                 <RequireAuth>
                   <AccountPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <RequireAuth>
+                  <CartPage />
                 </RequireAuth>
               }
             />
