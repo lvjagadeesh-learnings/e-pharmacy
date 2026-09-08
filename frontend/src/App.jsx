@@ -11,6 +11,7 @@ import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
 import CheckoutPage from './pages/CheckoutPage'
 import LoginPage from './pages/LoginPage'
+import MedicineDetailPage from './pages/MedicineDetailPage'
 import OrderConfirmationPage from './pages/OrderConfirmationPage'
 import OrdersPage from './pages/OrdersPage'
 import SignUpPage from './pages/SignUpPage'
@@ -57,6 +58,7 @@ function App() {
           <HealthBanner status={healthStatus} />
           <Routes>
             <Route path="/" element={<CatalogPage />} />
+            <Route path="/medicines/:medicineId" element={<MedicineDetailPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route

@@ -12,6 +12,8 @@ const medicine = {
   description: 'Pain and fever relief tablets.',
   priceCents: 599,
   imageUrl: 'https://example.com/paracetamol.png',
+  averageRating: 4.5,
+  reviewCount: 2,
 }
 
 function mockFetch({ authenticated }) {
@@ -45,6 +47,7 @@ function renderWithProviders(ui, { authenticated = false } = {}) {
           <Routes>
             <Route path="/" element={ui} />
             <Route path="/login" element={<p>Login page</p>} />
+            <Route path="/medicines/:medicineId" element={<p>Medicine detail page</p>} />
           </Routes>
         </CartProvider>
       </AuthProvider>
@@ -82,11 +85,36 @@ describe('MedicineCard', () => {
           description: 'Immune support supplement.',
           priceCents: 899,
           imageUrl: null,
+          averageRating: 0,
+          reviewCount: 0,
         }}
       />,
     )
 
     expect(screen.getByRole('img', { name: 'Vitamin C 1000mg' })).not.toHaveAttribute('src')
+  })
+
+  it('shows the average rating and review count when reviews exist', () => {
+    renderWithProviders(<MedicineCard medicine={medicine} />)
+
+    expect(screen.getByText('\u2605 4.5 (2 reviews)')).toBeInTheDocument()
+  })
+
+  it('shows a no-reviews message when there are no reviews', () => {
+    renderWithProviders(
+      <MedicineCard medicine={{ ...medicine, averageRating: 0, reviewCount: 0 }} />,
+    )
+
+    expect(screen.getByText('No reviews yet')).toBeInTheDocument()
+  })
+
+  it('links the medicine name to the detail page', async () => {
+    renderWithProviders(<MedicineCard medicine={medicine} />)
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('link', { name: 'Paracetamol 500mg' }))
+
+    expect(await screen.findByText('Medicine detail page')).toBeInTheDocument()
   })
 
   it('navigates to /login when a logged-out user clicks Add to cart', async () => {
