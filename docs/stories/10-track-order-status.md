@@ -1,6 +1,6 @@
 # User Story: 10 — Track order status from placed to received
 
-**Status:** ready
+**Status:** done
 
 **As a** user who has placed an order,
 **I want** to see my order's status update from placed through to delivered/received,
@@ -8,9 +8,9 @@
 
 ## Acceptance Criteria
 
-- [ ] An order detail/tracking view shows the current status (e.g. Placed → Processing → Shipped → Delivered)
-- [ ] The status history is visible to the user who placed the order
-- [ ] The final "received"/"delivered" status is reachable and clearly distinguished from in-progress statuses
+- [x] An order detail/tracking view shows the current status (e.g. Placed → Processing → Shipped → Delivered)
+- [x] The status history is visible to the user who placed the order
+- [x] The final "received"/"delivered" status is reachable and clearly distinguished from in-progress statuses
 
 ## Notes
 
