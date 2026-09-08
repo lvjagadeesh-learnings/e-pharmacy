@@ -12,6 +12,7 @@ import CatalogPage from './pages/CatalogPage'
 import CheckoutPage from './pages/CheckoutPage'
 import LoginPage from './pages/LoginPage'
 import OrderConfirmationPage from './pages/OrderConfirmationPage'
+import OrdersPage from './pages/OrdersPage'
 import SignUpPage from './pages/SignUpPage'
 import './App.css'
 
@@ -31,6 +32,7 @@ function AppHeader() {
       <p>Your trusted online pharmacy</p>
       {user && (
         <>
+          <Link to="/orders">Orders</Link>
           <Link to="/cart" data-testid="cart-badge">
             Cart ({itemCount})
           </Link>
@@ -78,6 +80,14 @@ function App() {
               element={
                 <RequireAuth>
                   <CheckoutPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <RequireAuth>
+                  <OrdersPage />
                 </RequireAuth>
               }
             />
