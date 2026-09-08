@@ -19,6 +19,8 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<Order> Orders => Set<Order>();
 
+    public DbSet<Review> Reviews => Set<Review>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<HealthCheck>(entity =>
@@ -84,6 +86,18 @@ public sealed class AppDbContext : DbContext
             });
 
             entity.Navigation(o => o.Items).HasField("_items").UsePropertyAccessMode(PropertyAccessMode.Field);
+        });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.UserId).IsRequired();
+            entity.Property(r => r.MedicineId).IsRequired();
+            entity.HasIndex(r => new { r.UserId, r.MedicineId }).IsUnique();
+            entity.Property(r => r.ReviewerDisplayName).IsRequired();
+            entity.Property(r => r.Rating).IsRequired();
+            entity.Property(r => r.Comment).IsRequired();
+            entity.Property(r => r.CreatedAtUtc).IsRequired();
         });
     }
 }

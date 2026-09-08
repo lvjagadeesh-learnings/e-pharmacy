@@ -23,7 +23,10 @@ builder.Services.AddScoped<RegisterUserHandler>();
 builder.Services.AddScoped<AuthenticateUserHandler>();
 
 builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<ListMedicinesHandler>();
+builder.Services.AddScoped<SubmitReviewHandler>();
+builder.Services.AddScoped<ListReviewsForMedicineHandler>();
 
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<AddCartItemHandler>();
