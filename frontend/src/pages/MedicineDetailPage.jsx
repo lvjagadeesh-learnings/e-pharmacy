@@ -85,7 +85,7 @@ function MedicineDetailPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h2>{medicine.name}</h2>
       <p>{medicine.description}</p>
       <p>{formatPrice(medicine.priceCents)}</p>
@@ -96,7 +96,7 @@ function MedicineDetailPage() {
       ) : (
         <ul>
           {reviews.map((review) => (
-            <li key={review.id}>
+            <li key={review.id} className="card">
               <strong>{review.reviewerDisplayName}</strong> — {review.rating}/5
               <p>{review.comment}</p>
             </li>
@@ -107,23 +107,41 @@ function MedicineDetailPage() {
       {user && (
         <form onSubmit={handleSubmit}>
           <h3>Leave a review</h3>
-          <label htmlFor="rating">Rating</label>
-          <select id="rating" value={rating} onChange={(event) => setRating(event.target.value)}>
-            <option value="5">5</option>
-            <option value="4">4</option>
-            <option value="3">3</option>
-            <option value="2">2</option>
-            <option value="1">1</option>
-          </select>
-          <label htmlFor="comment">Comment</label>
-          <textarea
-            id="comment"
-            value={comment}
-            onChange={(event) => setComment(event.target.value)}
-            required
-          />
-          {submitError && <p role="alert">{submitError}</p>}
-          <button type="submit" disabled={submitting}>
+          <div className="field">
+            <label className="field__label" htmlFor="rating">
+              Rating
+            </label>
+            <select
+              className="field__input"
+              id="rating"
+              value={rating}
+              onChange={(event) => setRating(event.target.value)}
+            >
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+            </select>
+          </div>
+          <div className="field">
+            <label className="field__label" htmlFor="comment">
+              Comment
+            </label>
+            <textarea
+              className="field__input"
+              id="comment"
+              value={comment}
+              onChange={(event) => setComment(event.target.value)}
+              required
+            />
+          </div>
+          {submitError && (
+            <p role="alert" aria-live="polite" className="form-error">
+              {submitError}
+            </p>
+          )}
+          <button type="submit" className="button button--primary" disabled={submitting}>
             Submit review
           </button>
         </form>

@@ -27,30 +27,46 @@ function LoginPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h2>Log in</h2>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
+        <div className="field">
+          <label className="field__label" htmlFor="email">
+            Email
+          </label>
+          <input
+            className="field__input"
+            id="email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </div>
 
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
+        <div className="field">
+          <label className="field__label" htmlFor="password">
+            Password
+          </label>
+          <input
+            className="field__input"
+            id="password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </div>
 
-        {error && <p role="alert">{error}</p>}
+        {error && (
+          <p role="alert" aria-live="polite" className="form-error">
+            {error}
+          </p>
+        )}
 
-        <button type="submit">Log in</button>
+        <button type="submit" className="button button--primary">
+          Log in
+        </button>
       </form>
     </div>
   )

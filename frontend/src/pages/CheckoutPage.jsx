@@ -59,7 +59,7 @@ function CheckoutPage() {
 
   if (loading) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Checkout</h2>
         <p>Loading your cart…</p>
       </div>
@@ -68,7 +68,7 @@ function CheckoutPage() {
 
   if (!cart || cart.lines.length === 0) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Checkout</h2>
         <p>Your cart is empty.</p>
       </div>
@@ -76,7 +76,7 @@ function CheckoutPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h2>Checkout</h2>
       <ul>
         {cart.lines.map((line) => (
@@ -87,32 +87,66 @@ function CheckoutPage() {
       </ul>
       <p data-testid="checkout-subtotal">Total: {formatPrice(cart.subtotalCents)}</p>
 
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p role="alert" aria-live="polite" className="form-error">
+          {error}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="shippingAddress">Shipping address</label>
-        <input
-          id="shippingAddress"
-          value={shippingAddress}
-          onChange={(event) => setShippingAddress(event.target.value)}
-          required
-        />
+        <div className="field">
+          <label className="field__label" htmlFor="shippingAddress">
+            Shipping address
+          </label>
+          <input
+            className="field__input"
+            id="shippingAddress"
+            value={shippingAddress}
+            onChange={(event) => setShippingAddress(event.target.value)}
+            required
+          />
+        </div>
 
-        <label htmlFor="cardNumber">Card number</label>
-        <input
-          id="cardNumber"
-          value={cardNumber}
-          onChange={(event) => setCardNumber(event.target.value)}
-          required
-        />
+        <div className="field">
+          <label className="field__label" htmlFor="cardNumber">
+            Card number
+          </label>
+          <input
+            className="field__input"
+            id="cardNumber"
+            value={cardNumber}
+            onChange={(event) => setCardNumber(event.target.value)}
+            required
+          />
+        </div>
 
-        <label htmlFor="expiry">Expiry</label>
-        <input id="expiry" value={expiry} onChange={(event) => setExpiry(event.target.value)} required />
+        <div className="field">
+          <label className="field__label" htmlFor="expiry">
+            Expiry
+          </label>
+          <input
+            className="field__input"
+            id="expiry"
+            value={expiry}
+            onChange={(event) => setExpiry(event.target.value)}
+            required
+          />
+        </div>
 
-        <label htmlFor="cvc">CVC</label>
-        <input id="cvc" value={cvc} onChange={(event) => setCvc(event.target.value)} required />
+        <div className="field">
+          <label className="field__label" htmlFor="cvc">
+            CVC
+          </label>
+          <input
+            className="field__input"
+            id="cvc"
+            value={cvc}
+            onChange={(event) => setCvc(event.target.value)}
+            required
+          />
+        </div>
 
-        <button type="submit" disabled={submitting}>
+        <button type="submit" className="button button--primary" disabled={submitting}>
           Pay now
         </button>
       </form>
