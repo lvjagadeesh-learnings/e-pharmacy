@@ -8,4 +8,6 @@ namespace EPharmacy.Application;
 public interface IMedicineRepository
 {
     Task<IReadOnlyList<Medicine>> ListAllAsync(CancellationToken cancellationToken);
+
+    Task<Medicine?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 }

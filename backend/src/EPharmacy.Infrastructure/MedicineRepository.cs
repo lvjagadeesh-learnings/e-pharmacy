@@ -15,4 +15,7 @@ public sealed class MedicineRepository : IMedicineRepository
 
     public async Task<IReadOnlyList<Medicine>> ListAllAsync(CancellationToken cancellationToken) =>
         await _dbContext.Medicines.ToListAsync(cancellationToken);
+
+    public async Task<Medicine?> FindByIdAsync(Guid id, CancellationToken cancellationToken) =>
+        await _dbContext.Medicines.FirstOrDefaultAsync(medicine => medicine.Id == id, cancellationToken);
 }

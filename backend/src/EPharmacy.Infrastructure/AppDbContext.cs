@@ -15,6 +15,8 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<Medicine> Medicines => Set<Medicine>();
 
+    public DbSet<Cart> Carts => Set<Cart>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<HealthCheck>(entity =>
@@ -40,6 +42,23 @@ public sealed class AppDbContext : DbContext
             entity.Property(m => m.Description).IsRequired();
             entity.Property(m => m.PriceCents).IsRequired();
             entity.Property(m => m.ImageUrl).IsRequired(false);
+        });
+
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.UserId).IsRequired();
+            entity.HasIndex(c => c.UserId).IsUnique();
+
+            entity.OwnsMany(c => c.Items, itemsBuilder =>
+            {
+                itemsBuilder.WithOwner().HasForeignKey("CartId");
+                itemsBuilder.Property(i => i.MedicineId).IsRequired();
+                itemsBuilder.Property(i => i.Quantity).IsRequired();
+                itemsBuilder.HasKey("CartId", "MedicineId");
+            });
+
+            entity.Navigation(c => c.Items).HasField("_items").UsePropertyAccessMode(PropertyAccessMode.Field);
         });
     }
 }
