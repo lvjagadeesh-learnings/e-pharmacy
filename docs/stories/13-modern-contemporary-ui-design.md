@@ -1,6 +1,6 @@
 # User Story: 13 — Apply a modern, contemporary visual design across the app
 
-**Status:** ready
+**Status:** done
 
 **As a** user of the e-Pharmacy app,
 **I want** the app to look clean, modern, and trustworthy,
@@ -8,9 +8,9 @@
 
 ## Acceptance Criteria
 
-- [ ] A consistent visual design (color palette, typography, spacing, component styling) is applied across all pages/flows
-- [ ] The design is responsive and usable on common mobile and desktop viewport widths
-- [ ] Interactive elements (buttons, forms, cards) have consistent, accessible styling (contrast, focus states)
+- [x] A consistent visual design (color palette, typography, spacing, component styling) is applied across all pages/flows
+- [x] The design is responsive and usable on common mobile and desktop viewport widths
+- [x] Interactive elements (buttons, forms, cards) have consistent, accessible styling (contrast, focus states)
 
 ## Notes
 
