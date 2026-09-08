@@ -70,6 +70,7 @@ public sealed class AppDbContext : DbContext
             entity.HasIndex(o => o.UserId);
             entity.Property(o => o.ShippingAddress).IsRequired();
             entity.Property(o => o.PlacedAtUtc).IsRequired();
+            entity.Property(o => o.ReceivedAtUtc);
             entity.Ignore(o => o.TotalCents);
 
             entity.OwnsMany(o => o.Items, itemsBuilder =>
