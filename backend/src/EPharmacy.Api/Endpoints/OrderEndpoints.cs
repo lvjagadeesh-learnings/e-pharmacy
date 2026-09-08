@@ -53,25 +53,32 @@ public static class OrderEndpoints
 
         app.MapGet("/api/orders/{orderId:guid}", async (
             Guid orderId,
-            IOrderRepository orderRepository,
+            GetOrderHandler handler,
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
         {
             var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var order = await orderRepository.FindByIdAsync(orderId, cancellationToken);
+            var order = await handler.HandleAsync(userId, orderId, cancellationToken);
 
-            if (order is null || order.UserId != userId)
+            if (order is null)
             {
                 return Results.NotFound();
             }
 
             return Results.Ok(new
             {
-                orderId = order.Id,
-                referenceNumber = order.Id.ToString("N")[..8].ToUpperInvariant(),
+                orderId = order.OrderId,
+                referenceNumber = order.ReferenceNumber,
                 shippingAddress = order.ShippingAddress,
                 placedAtUtc = order.PlacedAtUtc,
                 totalCents = order.TotalCents,
+                status = order.Status.ToString(),
+                statusHistory = order.StatusHistory.Select(e => new
+                {
+                    status = e.Status.ToString(),
+                    reachedAtUtc = e.ReachedAtUtc,
+                }),
+                receivedAtUtc = order.ReceivedAtUtc,
                 items = order.Items.Select(item => new
                 {
                     medicineId = item.MedicineId,
@@ -84,6 +91,50 @@ public static class OrderEndpoints
         })
         .RequireAuthorization()
         .WithName("GetOrder");
+
+        app.MapGet("/api/orders", async (
+            ListOrdersHandler handler,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var orders = await handler.HandleAsync(userId, cancellationToken);
+
+            return Results.Ok(orders.Select(o => new
+            {
+                orderId = o.OrderId,
+                referenceNumber = o.ReferenceNumber,
+                placedAtUtc = o.PlacedAtUtc,
+                totalCents = o.TotalCents,
+                status = o.Status.ToString(),
+            }));
+        })
+        .RequireAuthorization()
+        .WithName("ListOrders");
+
+        app.MapPost("/api/orders/{orderId:guid}/receive", async (
+            Guid orderId,
+            MarkOrderReceivedHandler handler,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var result = await handler.HandleAsync(userId, orderId, cancellationToken);
+
+            return result.Status switch
+            {
+                MarkOrderReceivedStatus.NotFound => Results.NotFound(),
+                MarkOrderReceivedStatus.NotYetDelivered => Results.Json(
+                    new { error = "Order has not yet been delivered." },
+                    statusCode: StatusCodes.Status409Conflict),
+                MarkOrderReceivedStatus.AlreadyReceived => Results.Json(
+                    new { error = "Order has already been marked as received." },
+                    statusCode: StatusCodes.Status409Conflict),
+                _ => Results.Ok(),
+            };
+        })
+        .RequireAuthorization()
+        .WithName("MarkOrderReceived");
 
         return app;
     }

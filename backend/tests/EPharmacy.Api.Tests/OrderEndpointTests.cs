@@ -4,6 +4,8 @@ using System.Text.Json;
 using EPharmacy.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EPharmacy.Api.Tests;
 
@@ -115,6 +117,95 @@ public class OrderEndpointTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await otherClient.GetAsync($"/api/orders/{orderId}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GET_order_detail_includes_status_and_status_history()
+    {
+        var client = await CreateAuthenticatedClientAsync();
+        var medicineId = await GetAnyMedicineIdAsync(client);
+        await client.PostAsJsonAsync("/api/cart/items", new AddCartItemRequest(medicineId, 1));
+        var checkoutResponse = await client.PostAsJsonAsync(
+            "/api/checkout",
+            new CheckoutRequest("1 Example St", "4111111111111111", "12/30", "123"));
+        var checkoutBody = await checkoutResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var orderId = checkoutBody.GetProperty("orderId").GetGuid();
+
+        var response = await client.GetAsync($"/api/orders/{orderId}");
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        body.GetProperty("status").GetString().Should().Be("Placed");
+        body.GetProperty("statusHistory").GetArrayLength().Should().Be(1);
+        body.GetProperty("receivedAtUtc").ValueKind.Should().Be(JsonValueKind.Null);
+    }
+
+    [Fact]
+    public async Task GET_orders_list_returns_only_the_callers_own_orders()
+    {
+        var firstClient = await CreateAuthenticatedClientAsync();
+        var medicineId = await GetAnyMedicineIdAsync(firstClient);
+        await firstClient.PostAsJsonAsync("/api/cart/items", new AddCartItemRequest(medicineId, 1));
+        await firstClient.PostAsJsonAsync(
+            "/api/checkout",
+            new CheckoutRequest("1 Example St", "4111111111111111", "12/30", "123"));
+
+        var secondClient = await CreateAuthenticatedClientAsync();
+        await secondClient.PostAsJsonAsync("/api/cart/items", new AddCartItemRequest(medicineId, 1));
+        await secondClient.PostAsJsonAsync(
+            "/api/checkout",
+            new CheckoutRequest("1 Example St", "4111111111111111", "12/30", "123"));
+
+        var response = await firstClient.GetAsync("/api/orders");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        body.GetArrayLength().Should().Be(1);
+    }
+
+    [Fact]
+    public async Task POST_receive_returns_409_before_the_order_is_delivered()
+    {
+        var client = await CreateAuthenticatedClientAsync();
+        var medicineId = await GetAnyMedicineIdAsync(client);
+        await client.PostAsJsonAsync("/api/cart/items", new AddCartItemRequest(medicineId, 1));
+        var checkoutResponse = await client.PostAsJsonAsync(
+            "/api/checkout",
+            new CheckoutRequest("1 Example St", "4111111111111111", "12/30", "123"));
+        var checkoutBody = await checkoutResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var orderId = checkoutBody.GetProperty("orderId").GetGuid();
+
+        var response = await client.PostAsync($"/api/orders/{orderId}/receive", null);
+
+        response.StatusCode.Should().Be((HttpStatusCode)409);
+    }
+
+    [Fact]
+    public async Task POST_receive_succeeds_once_delivered_and_returns_409_on_a_second_call()
+    {
+        var client = await CreateAuthenticatedClientAsync();
+        var medicineId = await GetAnyMedicineIdAsync(client);
+        await client.PostAsJsonAsync("/api/cart/items", new AddCartItemRequest(medicineId, 1));
+        var checkoutResponse = await client.PostAsJsonAsync(
+            "/api/checkout",
+            new CheckoutRequest("1 Example St", "4111111111111111", "12/30", "123"));
+        var checkoutBody = await checkoutResponse.Content.ReadFromJsonAsync<JsonElement>();
+        var orderId = checkoutBody.GetProperty("orderId").GetGuid();
+
+        await BackdateOrderPlacementAsync(orderId, DateTimeOffset.UtcNow.AddSeconds(-200));
+
+        var firstResponse = await client.PostAsync($"/api/orders/{orderId}/receive", null);
+        firstResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var secondResponse = await client.PostAsync($"/api/orders/{orderId}/receive", null);
+        secondResponse.StatusCode.Should().Be((HttpStatusCode)409);
+    }
+
+    private async Task BackdateOrderPlacementAsync(Guid orderId, DateTimeOffset placedAtUtc)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"UPDATE \"Orders\" SET \"PlacedAtUtc\" = {placedAtUtc} WHERE \"Id\" = {orderId}");
     }
 
     private async Task<HttpClient> CreateAuthenticatedClientAsync()
