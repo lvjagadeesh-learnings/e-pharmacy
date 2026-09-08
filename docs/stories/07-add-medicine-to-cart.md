@@ -1,6 +1,6 @@
 # User Story: 07 — Add a medicine to the cart
 
-**Status:** ready
+**Status:** done
 
 **As a** shopper viewing the catalog,
 **I want** to add a medicine to my cart,
@@ -8,10 +8,10 @@
 
 ## Acceptance Criteria
 
-- [ ] Each catalog item has an "Add to cart" action
-- [ ] Adding an item increases the cart's item count, visible somewhere in the UI
-- [ ] Adding the same item again increases its quantity rather than duplicating a line
-- [ ] Adding to cart requires the user to be logged in
+- [x] Each catalog item has an "Add to cart" action
+- [x] Adding an item increases the cart's item count, visible somewhere in the UI
+- [x] Adding the same item again increases its quantity rather than duplicating a line
+- [x] Adding to cart requires the user to be logged in
 
 ## Notes
 
