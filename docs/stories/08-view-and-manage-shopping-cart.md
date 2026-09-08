@@ -1,6 +1,6 @@
 # User Story: 08 — View and manage the shopping cart
 
-**Status:** ready
+**Status:** done
 
 **As a** shopper with items in my cart,
 **I want** to view my cart and adjust quantities or remove items,
@@ -8,10 +8,10 @@
 
 ## Acceptance Criteria
 
-- [ ] A cart view lists each added item with quantity, unit price, and line total
-- [ ] The user can change an item's quantity and remove an item
-- [ ] The cart shows a running subtotal that updates immediately with changes
-- [ ] An empty-cart state is handled with a clear message and a way back to the catalog
+- [x] A cart view lists each added item with quantity, unit price, and line total
+- [x] The user can change an item's quantity and remove an item
+- [x] The cart shows a running subtotal that updates immediately with changes
+- [x] An empty-cart state is handled with a clear message and a way back to the catalog
 
 ## Notes
 
