@@ -6,12 +6,12 @@ public sealed class Order
 {
     private readonly List<OrderItem> _items;
 
-    private Order(Guid id, Guid userId, string shippingAddress, IReadOnlyCollection<OrderItem> items, DateTimeOffset placedAtUtc)
+    private Order(Guid id, Guid userId, string shippingAddress, DateTimeOffset placedAtUtc)
     {
         Id = id;
         UserId = userId;
         ShippingAddress = shippingAddress;
-        _items = new List<OrderItem>(items);
+        _items = new List<OrderItem>();
         PlacedAtUtc = placedAtUtc;
     }
 
@@ -49,6 +49,8 @@ public sealed class Order
             throw new ArgumentException("Order must contain at least one item.", nameof(items));
         }
 
-        return new Order(id, userId, shippingAddress, items, placedAtUtc);
+        var order = new Order(id, userId, shippingAddress, placedAtUtc);
+        order._items.AddRange(items);
+        return order;
     }
 }
