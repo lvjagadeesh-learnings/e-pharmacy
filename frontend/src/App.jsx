@@ -9,7 +9,9 @@ import { useCart } from './context/useCart'
 import AccountPage from './pages/AccountPage'
 import CartPage from './pages/CartPage'
 import CatalogPage from './pages/CatalogPage'
+import CheckoutPage from './pages/CheckoutPage'
 import LoginPage from './pages/LoginPage'
+import OrderConfirmationPage from './pages/OrderConfirmationPage'
 import SignUpPage from './pages/SignUpPage'
 import './App.css'
 
@@ -68,6 +70,22 @@ function App() {
               element={
                 <RequireAuth>
                   <CartPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <RequireAuth>
+                  <CheckoutPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/orders/:orderId"
+              element={
+                <RequireAuth>
+                  <OrderConfirmationPage />
                 </RequireAuth>
               }
             />

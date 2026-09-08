@@ -117,6 +117,7 @@ function CartPage() {
         </tbody>
       </table>
       <p data-testid="cart-subtotal">Subtotal: {formatPrice(cart.subtotalCents)}</p>
+      <Link to="/checkout">Proceed to checkout</Link>
     </div>
   )
 }
