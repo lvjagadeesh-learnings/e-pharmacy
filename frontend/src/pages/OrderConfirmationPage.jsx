@@ -53,7 +53,7 @@ function OrderConfirmationPage() {
 
   if (loading) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Order confirmation</h2>
         <p>Loading your order…</p>
       </div>
@@ -62,7 +62,7 @@ function OrderConfirmationPage() {
 
   if (!order) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Order confirmation</h2>
         <p>We couldn&apos;t find that order.</p>
         <Link to="/">Back to catalog</Link>
@@ -71,7 +71,7 @@ function OrderConfirmationPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h2>Thank you for your order!</h2>
       <p>
         Reference number: <strong>{order.referenceNumber}</strong>
@@ -88,7 +88,7 @@ function OrderConfirmationPage() {
       {order.statusHistory && (
         <div>
           <h3>Order status</h3>
-          <ul data-testid="order-status-timeline">
+          <ul className="status-timeline" data-testid="order-status-timeline">
             {order.statusHistory.map((event) => (
               <li key={event.status}>{event.status}</li>
             ))}
@@ -97,12 +97,16 @@ function OrderConfirmationPage() {
       )}
 
       {order.status === 'Delivered' && !order.receivedAtUtc && (
-        <button type="button" onClick={handleMarkReceived} disabled={receiving}>
+        <button type="button" className="button button--primary" onClick={handleMarkReceived} disabled={receiving}>
           Mark as received
         </button>
       )}
       {order.receivedAtUtc && <p>You confirmed receipt of this order.</p>}
-      {receiveError && <p role="alert">{receiveError}</p>}
+      {receiveError && (
+        <p role="alert" aria-live="polite" className="form-error">
+          {receiveError}
+        </p>
+      )}
 
       <Link to="/">Back to catalog</Link>
     </div>

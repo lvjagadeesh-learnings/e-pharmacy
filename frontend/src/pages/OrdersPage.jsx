@@ -28,7 +28,7 @@ function OrdersPage() {
 
   if (loading) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Your orders</h2>
         <p>Loading your orders…</p>
       </div>
@@ -37,7 +37,7 @@ function OrdersPage() {
 
   if (orders.length === 0) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Your orders</h2>
         <p>You haven&apos;t placed any orders yet.</p>
         <Link to="/">Back to catalog</Link>
@@ -46,11 +46,11 @@ function OrdersPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h2>Your orders</h2>
-      <ul>
+      <ul className="orders-list">
         {orders.map((order) => (
-          <li key={order.orderId}>
+          <li key={order.orderId} className="card">
             <Link to={`/orders/${order.orderId}`}>{order.referenceNumber}</Link> — {order.status} —{' '}
             {formatPrice(order.totalCents)}
           </li>

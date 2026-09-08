@@ -1,25 +1,38 @@
 import { useMedicines } from '../api/useMedicines'
 import MedicineCard from '../components/MedicineCard'
+import './CatalogPage.css'
 
 function CatalogPage() {
   const { medicines, loading, error } = useMedicines()
 
   if (loading) {
-    return <p>Loading medicines…</p>
+    return (
+      <div className="page-container">
+        <p>Loading medicines…</p>
+      </div>
+    )
   }
 
   if (error) {
-    return <p role="alert">{error}</p>
+    return (
+      <div className="page-container">
+        <p role="alert">{error}</p>
+      </div>
+    )
   }
 
   if (medicines.length === 0) {
-    return <p>No medicines available.</p>
+    return (
+      <div className="page-container">
+        <p>No medicines available.</p>
+      </div>
+    )
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h2>Medicine catalog</h2>
-      <div>
+      <div className="catalog-grid">
         {medicines.map((medicine) => (
           <MedicineCard key={medicine.id} medicine={medicine} />
         ))}

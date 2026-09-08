@@ -62,7 +62,7 @@ function CartPage() {
 
   if (loading) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Your cart</h2>
         <p>Loading your cart…</p>
       </div>
@@ -71,7 +71,7 @@ function CartPage() {
 
   if (!cart || cart.lines.length === 0) {
     return (
-      <div>
+      <div className="page-container">
         <h2>Your cart</h2>
         <p>Your cart is empty.</p>
         <Link to="/">Back to catalog</Link>
@@ -80,9 +80,9 @@ function CartPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <h2>Your cart</h2>
-      <table>
+      <table className="responsive-table">
         <thead>
           <tr>
             <th>Medicine</th>
@@ -95,10 +95,11 @@ function CartPage() {
         <tbody>
           {cart.lines.map((line) => (
             <tr key={line.medicineId}>
-              <td>{line.name}</td>
-              <td>{formatPrice(line.priceCents)}</td>
-              <td>
+              <td data-label="Medicine">{line.name}</td>
+              <td data-label="Unit price">{formatPrice(line.priceCents)}</td>
+              <td data-label="Quantity">
                 <input
+                  className="field__input"
                   type="number"
                   min="0"
                   value={line.quantity}
@@ -106,9 +107,9 @@ function CartPage() {
                   onChange={(event) => handleQuantityChange(line.medicineId, Number(event.target.value))}
                 />
               </td>
-              <td>{formatPrice(line.lineTotalCents)}</td>
-              <td>
-                <button type="button" onClick={() => handleRemove(line.medicineId)}>
+              <td data-label="Line total">{formatPrice(line.lineTotalCents)}</td>
+              <td data-label="">
+                <button type="button" className="button button--secondary" onClick={() => handleRemove(line.medicineId)}>
                   Remove
                 </button>
               </td>
@@ -117,7 +118,9 @@ function CartPage() {
         </tbody>
       </table>
       <p data-testid="cart-subtotal">Subtotal: {formatPrice(cart.subtotalCents)}</p>
-      <Link to="/checkout">Proceed to checkout</Link>
+      <Link to="/checkout" className="button button--primary">
+        Proceed to checkout
+      </Link>
     </div>
   )
 }

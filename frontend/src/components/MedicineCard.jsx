@@ -24,7 +24,7 @@ function MedicineCard({ medicine }) {
   }
 
   return (
-    <article>
+    <article className="card">
       <img
         src={imageUrl || undefined}
         alt={name}
@@ -42,7 +42,7 @@ function MedicineCard({ medicine }) {
           ? `\u2605 ${averageRating.toFixed(1)} (${reviewCount} review${reviewCount === 1 ? '' : 's'})`
           : 'No reviews yet'}
       </p>
-      <button type="button" onClick={handleAddToCart}>
+      <button type="button" className="button button--primary" onClick={handleAddToCart}>
         Add to cart
       </button>
     </article>
