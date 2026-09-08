@@ -1,0 +1,91 @@
+using EPharmacy.Domain;
+using FluentAssertions;
+using Moq;
+
+namespace EPharmacy.Application.Tests;
+
+public class PlaceOrderHandlerTests
+{
+    private static readonly PaymentRequest AnyPaymentRequest = new(0, "4111111111111111", "12/30", "123");
+
+    [Fact]
+    public async Task HandleAsync_fails_fast_for_an_empty_cart_without_calling_the_payment_gateway()
+    {
+        var userId = Guid.NewGuid();
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), userId);
+
+        var cartRepository = new Mock<ICartRepository>();
+        cartRepository.Setup(r => r.GetOrCreateForUserAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(cart);
+        var medicineRepository = new Mock<IMedicineRepository>();
+        var paymentGateway = new Mock<IPaymentGateway>();
+        var orderRepository = new Mock<IOrderRepository>();
+        var handler = new PlaceOrderHandler(cartRepository.Object, medicineRepository.Object, paymentGateway.Object, orderRepository.Object);
+
+        var result = await handler.HandleAsync(userId, "1 Example St", "4111111111111111", "12/30", "123", CancellationToken.None);
+
+        result.Status.Should().Be(PlaceOrderStatus.EmptyCart);
+        paymentGateway.Verify(p => p.ChargeAsync(It.IsAny<PaymentRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+        orderRepository.Verify(r => r.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task HandleAsync_returns_a_failure_result_and_does_not_create_an_order_or_clear_the_cart_when_the_payment_is_declined()
+    {
+        var userId = Guid.NewGuid();
+        var medicineId = Guid.NewGuid();
+        var medicine = Medicine.Create(medicineId, "Paracetamol 500mg", "Pain and fever relief tablets.", 599, null);
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), userId);
+        cart.AddItem(medicineId, 2);
+
+        var cartRepository = new Mock<ICartRepository>();
+        cartRepository.Setup(r => r.GetOrCreateForUserAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(cart);
+        var medicineRepository = new Mock<IMedicineRepository>();
+        medicineRepository.Setup(r => r.FindByIdAsync(medicineId, It.IsAny<CancellationToken>())).ReturnsAsync(medicine);
+        var paymentGateway = new Mock<IPaymentGateway>();
+        paymentGateway.Setup(p => p.ChargeAsync(It.IsAny<PaymentRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PaymentResult(false, "Card declined."));
+        var orderRepository = new Mock<IOrderRepository>();
+        var handler = new PlaceOrderHandler(cartRepository.Object, medicineRepository.Object, paymentGateway.Object, orderRepository.Object);
+
+        var result = await handler.HandleAsync(userId, "1 Example St", "4000000000000002", "12/30", "123", CancellationToken.None);
+
+        result.Status.Should().Be(PlaceOrderStatus.PaymentDeclined);
+        orderRepository.Verify(r => r.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
+        cartRepository.Verify(r => r.SaveAsync(It.IsAny<Cart>(), It.IsAny<CancellationToken>()), Times.Never);
+        cart.Items.Should().ContainSingle(item => item.MedicineId == medicineId && item.Quantity == 2);
+    }
+
+    [Fact]
+    public async Task HandleAsync_creates_the_order_with_correct_snapshot_totals_and_clears_the_cart_when_the_payment_succeeds()
+    {
+        var userId = Guid.NewGuid();
+        var medicineId = Guid.NewGuid();
+        var medicine = Medicine.Create(medicineId, "Paracetamol 500mg", "Pain and fever relief tablets.", 599, null);
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), userId);
+        cart.AddItem(medicineId, 2);
+
+        var cartRepository = new Mock<ICartRepository>();
+        cartRepository.Setup(r => r.GetOrCreateForUserAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(cart);
+        var medicineRepository = new Mock<IMedicineRepository>();
+        medicineRepository.Setup(r => r.FindByIdAsync(medicineId, It.IsAny<CancellationToken>())).ReturnsAsync(medicine);
+        var paymentGateway = new Mock<IPaymentGateway>();
+        paymentGateway.Setup(p => p.ChargeAsync(It.IsAny<PaymentRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PaymentResult(true, null));
+        Order? capturedOrder = null;
+        var orderRepository = new Mock<IOrderRepository>();
+        orderRepository.Setup(r => r.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
+            .Callback<Order, CancellationToken>((order, _) => capturedOrder = order)
+            .Returns(Task.CompletedTask);
+        var handler = new PlaceOrderHandler(cartRepository.Object, medicineRepository.Object, paymentGateway.Object, orderRepository.Object);
+
+        var result = await handler.HandleAsync(userId, "1 Example St", "4111111111111111", "12/30", "123", CancellationToken.None);
+
+        result.Status.Should().Be(PlaceOrderStatus.Success);
+        result.TotalCents.Should().Be(1198);
+        capturedOrder.Should().NotBeNull();
+        capturedOrder!.TotalCents.Should().Be(1198);
+        capturedOrder.Items.Should().ContainSingle(item => item.MedicineId == medicineId && item.Quantity == 2 && item.UnitPriceCents == 599);
+        cart.Items.Should().BeEmpty();
+        cartRepository.Verify(r => r.SaveAsync(cart, It.IsAny<CancellationToken>()), Times.Once);
+    }
+}

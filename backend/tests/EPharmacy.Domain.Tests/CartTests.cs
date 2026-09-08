@@ -159,4 +159,17 @@ public class CartTests
         act.Should().NotThrow();
         cart.Items.Should().ContainSingle(item => item.MedicineId == medicineId);
     }
+
+    [Fact]
+    public void Clear_removes_all_lines()
+    {
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), Guid.NewGuid());
+        cart.AddItem(Guid.NewGuid(), 1);
+        cart.AddItem(Guid.NewGuid(), 2);
+
+        cart.Clear();
+
+        cart.Items.Should().BeEmpty();
+        cart.TotalItemCount.Should().Be(0);
+    }
 }

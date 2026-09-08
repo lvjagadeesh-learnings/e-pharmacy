@@ -79,4 +79,9 @@ public sealed class Cart
     {
         _items.RemoveAll(item => item.MedicineId == medicineId);
     }
+
+    public void Clear()
+    {
+        _items.Clear();
+    }
 }
