@@ -72,29 +72,29 @@ frontend/src/
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Application/AuthenticateUserHandler.cs` — new handler + `AuthenticateUserCommand`/`AuthenticateResult`
-- [ ] `backend/tests/EPharmacy.Application.Tests/AuthenticateUserHandlerTests.cs` — new, written first (TDD), mocks `IUserRepository`/`IPasswordHasher`
-- [ ] `backend/src/EPharmacy.Api/Endpoints/AuthEndpoints.cs` — add `POST /api/auth/login` and `GET /api/auth/me`
-- [ ] `backend/src/EPharmacy.Api/Program.cs` — DI registration for `AuthenticateUserHandler`
-- [ ] `backend/tests/EPharmacy.Api.Tests/AuthEndpointTests.cs` — extend with login/`me` cases
-- [ ] `frontend/src/context/AuthContext.jsx` — add `login()`, hydrate `user`/`loading` via `GET /api/auth/me` on mount
-- [ ] `frontend/src/components/RequireAuth.jsx` — new
-- [ ] `frontend/src/pages/LoginPage.jsx` — new + `LoginPage.test.jsx`
-- [ ] `frontend/src/pages/AccountPage.jsx` — new (protected placeholder) + `AccountPage.test.jsx`
-- [ ] `frontend/src/App.jsx` — add `/login` route and `/account` route wrapped in `<RequireAuth>`
+- [x] `backend/src/EPharmacy.Application/AuthenticateUserHandler.cs` — new handler + `AuthenticateUserCommand`/`AuthenticateResult`
+- [x] `backend/tests/EPharmacy.Application.Tests/AuthenticateUserHandlerTests.cs` — new, written first (TDD), mocks `IUserRepository`/`IPasswordHasher`
+- [x] `backend/src/EPharmacy.Api/Endpoints/AuthEndpoints.cs` — add `POST /api/auth/login` and `GET /api/auth/me`
+- [x] `backend/src/EPharmacy.Api/Program.cs` — DI registration for `AuthenticateUserHandler`
+- [x] `backend/tests/EPharmacy.Api.Tests/AuthEndpointTests.cs` — extend with login/`me` cases
+- [x] `frontend/src/context/AuthContext.jsx` — add `login()`, hydrate `user`/`loading` via `GET /api/auth/me` on mount
+- [x] `frontend/src/components/RequireAuth.jsx` — new
+- [x] `frontend/src/pages/LoginPage.jsx` — new + `LoginPage.test.jsx`
+- [x] `frontend/src/pages/AccountPage.jsx` — new (protected placeholder) + `AccountPage.test.jsx`
+- [x] `frontend/src/App.jsx` — add `/login` route and `/account` route wrapped in `<RequireAuth>`
 
 ## Task Breakdown
 
-1. [ ] Write `AuthenticateUserHandlerTests.cs` (red): correct credentials return `Succeeded = true` with the user; unknown email and wrong password both return `Succeeded = false` with no other distinguishing state; `Verify` is not called when the user isn't found. Implement `AuthenticateUserHandler` to go green.
-2. [ ] Add `POST /api/auth/login` to `AuthEndpoints.cs`: on success, sign in via `HttpContext.SignInAsync` and return `200`; on failure, return `401 { message: "Invalid email or password." }` regardless of cause.
-3. [ ] Add `GET /api/auth/me` to `AuthEndpoints.cs`: `200 { id, email, displayName }` from `HttpContext.User` claims when authenticated, `401` otherwise (add `.RequireAuthorization()` on this route).
-4. [ ] Extend `AuthEndpointTests.cs`: login with correct credentials → `200` + cookie; wrong password → `401` with the generic message; unknown email → the same `401`/message; `GET /api/auth/me` returns `401` with no cookie and `200` with one from a prior login.
-5. [ ] Extend `AuthContext.jsx`: add `login(payload)`; on mount, call `GET /api/auth/me` and set `user`/`loading` accordingly before children render.
-6. [ ] Build `RequireAuth.jsx`: renders nothing while `loading`, `<Navigate to="/login" replace />` when no `user`, otherwise its children.
-7. [ ] Build `LoginPage.jsx` (email/password fields, required-field validation, single generic error message on `401`, redirect to `/` via `useNavigate()` on success) + `LoginPage.test.jsx` (validation error, invalid-credentials error, success-then-redirect).
-8. [ ] Build `AccountPage.jsx` (reads `user` from `useAuth()`, shows a welcome message) + `AccountPage.test.jsx`; add `/login` and `/account` (wrapped in `<RequireAuth>`) routes to `App.jsx`.
-9. [ ] Manually verify protected-area gating: visiting `/account` while logged out redirects to `/login`; logging in then visiting `/account` renders the welcome message.
-10. [ ] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test of the full login flow, `node scripts/validate-repository.mjs`.
+1. [x] Write `AuthenticateUserHandlerTests.cs` (red): correct credentials return `Succeeded = true` with the user; unknown email and wrong password both return `Succeeded = false` with no other distinguishing state; `Verify` is not called when the user isn't found. Implement `AuthenticateUserHandler` to go green.
+2. [x] Add `POST /api/auth/login` to `AuthEndpoints.cs`: on success, sign in via `HttpContext.SignInAsync` and return `200`; on failure, return `401 { message: "Invalid email or password." }` regardless of cause.
+3. [x] Add `GET /api/auth/me` to `AuthEndpoints.cs`: `200 { id, email, displayName }` from `HttpContext.User` claims when authenticated, `401` otherwise (add `.RequireAuthorization()` on this route).
+4. [x] Extend `AuthEndpointTests.cs`: login with correct credentials → `200` + cookie; wrong password → `401` with the generic message; unknown email → the same `401`/message; `GET /api/auth/me` returns `401` with no cookie and `200` with one from a prior login.
+5. [x] Extend `AuthContext.jsx`: add `login(payload)`; on mount, call `GET /api/auth/me` and set `user`/`loading` accordingly before children render.
+6. [x] Build `RequireAuth.jsx`: renders nothing while `loading`, `<Navigate to="/login" replace />` when no `user`, otherwise its children.
+7. [x] Build `LoginPage.jsx` (email/password fields, required-field validation, single generic error message on `401`, redirect to `/` via `useNavigate()` on success) + `LoginPage.test.jsx` (validation error, invalid-credentials error, success-then-redirect).
+8. [x] Build `AccountPage.jsx` (reads `user` from `useAuth()`, shows a welcome message) + `AccountPage.test.jsx`; add `/login` and `/account` (wrapped in `<RequireAuth>`) routes to `App.jsx`.
+9. [x] Manually verify protected-area gating: visiting `/account` while logged out redirects to `/login`; logging in then visiting `/account` renders the welcome message.
+10. [x] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test of the full login flow, `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
@@ -128,6 +128,11 @@ frontend/src/
 ## Dependencies
 
 Depends on story 03 (`User` entity, cookie auth scheme, `AuthContext`, routing foundation).
+
+## Deviations
+
+- AC4 ("protected areas... are inaccessible while logged out") lists cart, orders, reviews, and membership specifically, but none of those pages exist in the codebase yet (they belong to stories 05, 07–09, 11). As the plan's Context section anticipated, this story satisfies AC4 by building the `RequireAuth` wrapper and proving it works against the new minimal `/account` placeholder page. Future stories must wrap their own routes in `<RequireAuth>` rather than reinventing gating logic.
+- `GET /api/auth/me` reads `id`, `email`, and `displayName` from claims on the auth cookie. Because `POST /api/auth/register`'s original claims set (from plan 03) only included `NameIdentifier` and `Email`, a `displayName` claim was added to the shared sign-in helper used by both `/api/auth/register` and `/api/auth/login` so `/api/auth/me` can return a complete profile without a repository round-trip, as the plan intended.
 
 ## Open Questions
 
