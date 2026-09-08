@@ -96,4 +96,67 @@ public class CartTests
 
         act.Should().Throw<ArgumentException>();
     }
+
+    [Fact]
+    public void UpdateItemQuantity_replaces_an_existing_lines_quantity()
+    {
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), Guid.NewGuid());
+        var medicineId = Guid.NewGuid();
+        cart.AddItem(medicineId, 1);
+
+        cart.UpdateItemQuantity(medicineId, 5);
+
+        cart.Items.Should().ContainSingle(item => item.MedicineId == medicineId && item.Quantity == 5);
+        cart.TotalItemCount.Should().Be(5);
+    }
+
+    [Fact]
+    public void UpdateItemQuantity_throws_for_an_unknown_medicine_id()
+    {
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), Guid.NewGuid());
+
+        var act = () => cart.UpdateItemQuantity(Guid.NewGuid(), 5);
+
+        act.Should().Throw<ArgumentException>();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void UpdateItemQuantity_rejects_a_non_positive_quantity(int quantity)
+    {
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), Guid.NewGuid());
+        var medicineId = Guid.NewGuid();
+        cart.AddItem(medicineId, 1);
+
+        var act = () => cart.UpdateItemQuantity(medicineId, quantity);
+
+        act.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void RemoveItem_removes_an_existing_line()
+    {
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), Guid.NewGuid());
+        var medicineId = Guid.NewGuid();
+        cart.AddItem(medicineId, 1);
+
+        cart.RemoveItem(medicineId);
+
+        cart.Items.Should().BeEmpty();
+        cart.TotalItemCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void RemoveItem_is_a_no_op_for_an_unknown_medicine_id()
+    {
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), Guid.NewGuid());
+        var medicineId = Guid.NewGuid();
+        cart.AddItem(medicineId, 1);
+
+        var act = () => cart.RemoveItem(Guid.NewGuid());
+
+        act.Should().NotThrow();
+        cart.Items.Should().ContainSingle(item => item.MedicineId == medicineId);
+    }
 }

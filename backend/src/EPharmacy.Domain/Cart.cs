@@ -58,4 +58,25 @@ public sealed class Cart
             _items.Add(new CartItem(medicineId, quantity));
         }
     }
+
+    public void UpdateItemQuantity(Guid medicineId, int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentException("Quantity must be positive.", nameof(quantity));
+        }
+
+        var existingIndex = _items.FindIndex(item => item.MedicineId == medicineId);
+        if (existingIndex < 0)
+        {
+            throw new ArgumentException("Medicine is not in the cart.", nameof(medicineId));
+        }
+
+        _items[existingIndex] = _items[existingIndex] with { Quantity = quantity };
+    }
+
+    public void RemoveItem(Guid medicineId)
+    {
+        _items.RemoveAll(item => item.MedicineId == medicineId);
+    }
 }
