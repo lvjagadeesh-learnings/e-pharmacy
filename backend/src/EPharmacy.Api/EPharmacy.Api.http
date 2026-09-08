@@ -1,0 +1,6 @@
+@EPharmacy.Api_HostAddress = http://localhost:5123
+
+GET {{EPharmacy.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

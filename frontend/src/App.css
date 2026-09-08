@@ -1,0 +1,14 @@
+#app-header {
+  padding: 32px 20px 8px;
+}
+
+#app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
+  padding: 24px 20px;
+}
+

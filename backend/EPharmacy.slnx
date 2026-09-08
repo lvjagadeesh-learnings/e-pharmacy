@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EPharmacy.Api/EPharmacy.Api.csproj" />
+    <Project Path="src/EPharmacy.Application/EPharmacy.Application.csproj" />
+    <Project Path="src/EPharmacy.Domain/EPharmacy.Domain.csproj" />
+    <Project Path="src/EPharmacy.Infrastructure/EPharmacy.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EPharmacy.Api.Tests/EPharmacy.Api.Tests.csproj" />
+    <Project Path="tests/EPharmacy.Application.Tests/EPharmacy.Application.Tests.csproj" />
+    <Project Path="tests/EPharmacy.Domain.Tests/EPharmacy.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

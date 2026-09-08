@@ -1,0 +1,20 @@
+# Node (frontend, root scaffold tooling)
+node_modules/
+dist/
+dist-ssr/
+npm-debug.log*
+
+# .NET (backend)
+backend/**/bin/
+backend/**/obj/
+
+# SQLite dev databases
+*.db
+*.db-shm
+*.db-wal
+
+# Editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
