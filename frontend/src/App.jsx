@@ -5,7 +5,7 @@ import RequireAuth from './components/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './context/useAuth'
 import AccountPage from './pages/AccountPage'
-import HomePage from './pages/HomePage'
+import CatalogPage from './pages/CatalogPage'
 import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 import './App.css'
@@ -42,7 +42,7 @@ function App() {
       <main id="app-main">
         <HealthBanner status={healthStatus} />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<CatalogPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
