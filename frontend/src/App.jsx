@@ -1,6 +1,4 @@
 import { Link, Route, Routes, useNavigate } from 'react-router-dom'
-import { useHealthStatus } from './api/useHealthStatus'
-import HealthBanner from './components/HealthBanner'
 import RequireAuth from './components/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
@@ -12,6 +10,7 @@ import CatalogPage from './pages/CatalogPage'
 import CheckoutPage from './pages/CheckoutPage'
 import LoginPage from './pages/LoginPage'
 import MedicineDetailPage from './pages/MedicineDetailPage'
+import MembershipPage from './pages/MembershipPage'
 import OrderConfirmationPage from './pages/OrderConfirmationPage'
 import OrdersPage from './pages/OrdersPage'
 import SignUpPage from './pages/SignUpPage'
@@ -31,6 +30,7 @@ function AppHeader() {
     <header id="app-header">
       <h1>e-Pharmacy</h1>
       <p>Your trusted online pharmacy</p>
+      <Link to="/membership">Membership</Link>
       {user && (
         <>
           <Link to="/orders">Orders</Link>
@@ -47,8 +47,6 @@ function AppHeader() {
 }
 
 function App() {
-  const healthStatus = useHealthStatus()
-
   return (
     <AuthProvider>
       <CartProvider>
@@ -58,12 +56,12 @@ function App() {
         <AppHeader />
 
         <main id="app-main" tabIndex={-1}>
-          <HealthBanner status={healthStatus} />
           <Routes>
             <Route path="/" element={<CatalogPage />} />
             <Route path="/medicines/:medicineId" element={<MedicineDetailPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/membership" element={<MembershipPage />} />
             <Route
               path="/account"
               element={

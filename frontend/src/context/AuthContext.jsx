@@ -67,6 +67,10 @@ export function AuthProvider({ children }) {
     }
   }
 
-  return <AuthContext.Provider value={{ user, loading, register, login, logout }}>{children}</AuthContext.Provider>
+  function updateUser(partialUser) {
+    setUser((current) => (current ? { ...current, ...partialUser } : current))
+  }
+
+  return <AuthContext.Provider value={{ user, loading, register, login, logout, updateUser }}>{children}</AuthContext.Provider>
 }
 
