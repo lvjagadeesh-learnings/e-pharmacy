@@ -38,21 +38,21 @@ sequenceDiagram
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Api/Endpoints/AuthEndpoints.cs` — add `POST /api/auth/logout`
-- [ ] `backend/tests/EPharmacy.Api.Tests/AuthEndpointTests.cs` — extend with logout case
-- [ ] `frontend/src/context/AuthContext.jsx` — add `logout()`
-- [ ] `frontend/src/App.jsx` — conditional "Log out" button in the header when `user` is set
-- [ ] `frontend/src/App.test.jsx` — extend with logged-in/logged-out header rendering cases
+- [x] `backend/src/EPharmacy.Api/Endpoints/AuthEndpoints.cs` — add `POST /api/auth/logout`
+- [x] `backend/tests/EPharmacy.Api.Tests/AuthEndpointTests.cs` — extend with logout case
+- [x] `frontend/src/context/AuthContext.jsx` — add `logout()`
+- [x] `frontend/src/App.jsx` — conditional "Log out" button in the header when `user` is set
+- [x] `frontend/src/App.test.jsx` — extend with logged-in/logged-out header rendering cases
 
 ## Task Breakdown
 
-1. [ ] Add `POST /api/auth/logout` to `AuthEndpoints.cs` (`.RequireAuthorization()`), calling `HttpContext.SignOutAsync`.
-2. [ ] Extend `AuthEndpointTests.cs`: logging out after a successful login returns `200` with a cleared `Set-Cookie`, and a subsequent `GET /api/auth/me` returns `401`.
-3. [ ] Add `logout()` to `AuthContext.jsx`: calls the endpoint, then unconditionally sets `user` to `null` (`try`/`finally`).
-4. [ ] Add the "Log out" button to `App.jsx`'s header, rendered only when `user` is set; wires it to `logout()` followed by `useNavigate('/')`.
-5. [ ] Extend `App.test.jsx`: header shows "Log out" with a mocked authenticated `AuthContext` value and shows nothing (no button) when logged out.
-6. [ ] Manually verify: log in, visit `/account`, click "Log out" — confirm redirect to `/`, and that navigating back to `/account` now redirects to `/login`.
-7. [ ] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test, `node scripts/validate-repository.mjs`.
+1. [x] Add `POST /api/auth/logout` to `AuthEndpoints.cs` (`.RequireAuthorization()`), calling `HttpContext.SignOutAsync`.
+2. [x] Extend `AuthEndpointTests.cs`: logging out after a successful login returns `200` with a cleared `Set-Cookie`, and a subsequent `GET /api/auth/me` returns `401`.
+3. [x] Add `logout()` to `AuthContext.jsx`: calls the endpoint, then unconditionally sets `user` to `null` (`try`/`finally`).
+4. [x] Add the "Log out" button to `App.jsx`'s header, rendered only when `user` is set; wires it to `logout()` followed by `useNavigate('/')`.
+5. [x] Extend `App.test.jsx`: header shows "Log out" with a mocked authenticated `AuthContext` value and shows nothing (no button) when logged out.
+6. [x] Manually verify: log in, visit `/account`, click "Log out" — confirm redirect to `/`, and that navigating back to `/account` now redirects to `/login`.
+7. [x] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test, `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
@@ -77,6 +77,11 @@ sequenceDiagram
 | Logout clears the server-side cookie session | HTTP response + follow-up `/api/auth/me` via `WebApplicationFactory` | API functional | Test-alongside | Every PR |
 | Header shows/hides the logout action based on auth state | Rendered DOM under mocked `AuthContext` | Frontend component | Test-alongside | Every PR |
 | Full logged-in → logout → protected-page-redirects journey | Real browser + real backend | Manual smoke | Test-after | Pre-merge manual check only |
+
+## Deviations
+
+- `App.jsx`'s header could not call `useAuth()` directly because `App` itself renders `<AuthProvider>` as the root of its return value, so `App`'s own function body sits outside the provider's subtree. The header was extracted into a small `AppHeader` child component rendered inside `<AuthProvider>`, which calls `useAuth()` and `useNavigate()`.
+- Task 6's manual check anticipated landing on `/` after clicking "Log out" from `/account`. In practice the app lands on `/login` instead: clearing `user` re-renders `RequireAuth` on the still-mounted `/account` route, which redirects to `/login` before (or racing with) the header's own `navigate('/')` call. This still satisfies AC3 ("protected pages redirect to login after logout") and arguably better serves AC2/AC3 together, so it was kept as-is rather than forcing a `/` landing.
 
 ## Dependencies
 

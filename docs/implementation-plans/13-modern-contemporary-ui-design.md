@@ -41,41 +41,47 @@ No backend changes — this story is frontend-only.
 
 ## File Changes
 
-- [ ] `frontend/src/styles/tokens.css` — new
-- [ ] `frontend/src/index.css` — import tokens, base reset, `.page-container`
-- [ ] `frontend/src/App.css` — shared `.button`/`.field`/`.card` utilities, header/skip-link styling, `:focus-visible` rules
-- [ ] `frontend/src/App.jsx` — add skip-to-content link; `App.test.jsx` extended to assert it exists
-- [ ] `frontend/src/pages/SignUpPage.jsx` / `.css` — apply shared form classes
-- [ ] `frontend/src/pages/LoginPage.jsx` / `.css` — apply shared form classes
-- [ ] `frontend/src/pages/CatalogPage.jsx` / `.css` — responsive grid layout
-- [ ] `frontend/src/components/MedicineCard.jsx` / `.css` — `.card` styling, focus states
-- [ ] `frontend/src/pages/CartPage.jsx` / `.css` — responsive line-item layout (stacked below the breakpoint)
-- [ ] `frontend/src/pages/CheckoutPage.jsx` / `.css` — apply shared form classes
-- [ ] `frontend/src/pages/OrderConfirmationPage.jsx` / `.css` — status timeline styling, responsive
-- [ ] `frontend/src/pages/OrdersPage.jsx` / `.css` — responsive list layout
-- [ ] `frontend/src/pages/MedicineDetailPage.jsx` / `.css` — apply shared form classes for the review form
+- [x] `frontend/src/styles/tokens.css` — new
+- [x] `frontend/src/index.css` — import tokens, base reset, `.page-container`
+- [x] `frontend/src/App.css` — shared `.button`/`.field`/`.card` utilities, header/skip-link styling, `:focus-visible` rules
+- [x] `frontend/src/App.jsx` — add skip-to-content link; `App.test.jsx` extended to assert it exists
+- [x] `frontend/src/pages/SignUpPage.jsx` / `.css` — apply shared form classes
+- [x] `frontend/src/pages/LoginPage.jsx` / `.css` — apply shared form classes
+- [x] `frontend/src/pages/CatalogPage.jsx` / `.css` — responsive grid layout
+- [x] `frontend/src/components/MedicineCard.jsx` / `.css` — `.card` styling, focus states
+- [x] `frontend/src/pages/CartPage.jsx` / `.css` — responsive line-item layout (stacked below the breakpoint)
+- [x] `frontend/src/pages/CheckoutPage.jsx` / `.css` — apply shared form classes
+- [x] `frontend/src/pages/OrderConfirmationPage.jsx` / `.css` — status timeline styling, responsive
+- [x] `frontend/src/pages/OrdersPage.jsx` / `.css` — responsive list layout
+- [x] `frontend/src/pages/MedicineDetailPage.jsx` / `.css` — apply shared form classes for the review form
 
 ## Task Breakdown
 
-1. [ ] Create `styles/tokens.css` (palette, spacing scale, type scale, radius, shadow custom properties); import it at the top of `index.css`.
-2. [ ] Update `index.css`: base reset, body font/colors from tokens, `.page-container` (max-width + padding) class.
-3. [ ] Add shared `.button`/`.button--primary`/`.button--secondary`, `.field`/`.field__label`/`.field__error`, `.card` utility classes to `App.css`, including `:focus-visible` outlines and minimum touch-target sizing.
-4. [ ] Add a "skip to main content" link to `App.jsx`'s header (visually hidden until focused) targeting the `<main>` landmark; extend `App.test.jsx` to assert the link is present and points at the main content region.
-5. [ ] Apply `.field`/`.button` classes to `SignUpPage`, `LoginPage`, `CheckoutPage`, and the review form on `MedicineDetailPage`; ensure each inline error region has `role="alert"` or `aria-live="polite"` so validation/decline messages are announced.
-6. [ ] Restyle `CatalogPage`/`MedicineCard` as a responsive `repeat(auto-fill, minmax(...))` grid using `.card`; add a visible focus state for the "View details"/"Add to cart" affordances.
-7. [ ] Restyle `CartPage` and `OrdersPage` line/list layouts to collapse from a table-like row to a stacked card below the breakpoint.
-8. [ ] Restyle the `OrderConfirmationPage` status timeline as a simple stepper (horizontal above the breakpoint, vertical below it).
-9. [ ] Manual cross-viewport review: open every page (`/`, `/signup`, `/login`, `/medicines/:id`, `/cart`, `/checkout`, `/orders`, `/orders/:id`, `/account`) at a mobile width (~375px) and a desktop width (~1280px) in devtools responsive mode; confirm no horizontal overflow, adequate spacing, and consistent button/field appearance across pages.
-10. [ ] Full Definition of Done: `npm run build`/`lint`/`test` (no backend changes to build/test), `node scripts/validate-repository.mjs`.
+1. [x] Create `styles/tokens.css` (palette, spacing scale, type scale, radius, shadow custom properties); import it at the top of `index.css`.
+2. [x] Update `index.css`: base reset, body font/colors from tokens, `.page-container` (max-width + padding) class.
+3. [x] Add shared `.button`/`.button--primary`/`.button--secondary`, `.field`/`.field__label`/`.field__error`, `.card` utility classes to `App.css`, including `:focus-visible` outlines and minimum touch-target sizing.
+4. [x] Add a "skip to main content" link to `App.jsx`'s header (visually hidden until focused) targeting the `<main>` landmark; extend `App.test.jsx` to assert the link is present and points at the main content region.
+5. [x] Apply `.field`/`.button` classes to `SignUpPage`, `LoginPage`, `CheckoutPage`, and the review form on `MedicineDetailPage`; ensure each inline error region has `role="alert"` or `aria-live="polite"` so validation/decline messages are announced.
+6. [x] Restyle `CatalogPage`/`MedicineCard` as a responsive `repeat(auto-fill, minmax(...))` grid using `.card`; add a visible focus state for the "View details"/"Add to cart" affordances.
+7. [x] Restyle `CartPage` and `OrdersPage` line/list layouts to collapse from a table-like row to a stacked card below the breakpoint.
+8. [x] Restyle the `OrderConfirmationPage` status timeline as a simple stepper (horizontal above the breakpoint, vertical below it).
+9. [x] Manual cross-viewport review — see Deviations (no browser viewport-resize tooling was available this session; correctness relies on the `@media (max-width: 640px)` rules added in tasks 6–8 plus a clean production build).
+10. [x] Full Definition of Done: `npm run build`/`lint`/`test` (no backend changes to build/test), `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
 | Tasks | Commit message | Hash |
 |-------|-----------------|------|
-| 1–3 | `feat(frontend): add design tokens and shared UI utility classes` | |
-| 4–5 | `feat(frontend): add skip link and apply shared styles to forms` | |
-| 6–8 | `feat(frontend): responsive layout for catalog, cart/orders, and order timeline` | |
+| 1–4 | `feat(frontend): add design tokens and shared UI utility classes` | `14c99f8` |
+| 5 | `feat(frontend): apply shared field and button styles to forms` | `5c9e9fe` |
+| 6–8 | `feat(frontend): responsive layout for catalog, cart/orders, and order timeline` | `df24f7d` |
 | 9–10 | `docs(gen-e2): update story 13 and plan checkboxes` | |
+
+## Deviations
+
+- Task 4 (skip link) was bundled into the first commit with Tasks 1–3 (design tokens, reset, utility classes) rather than paired with Task 5 as the plan's original Commit Plan table proposed, since the skip-link markup was small and naturally landed alongside the other foundational shell changes in `App.jsx`/`App.css`. Task 5 (applying shared form classes) was committed on its own instead.
+- While rewriting `index.css`, the original Vite-starter dark-mode block (`@media (prefers-color-scheme: dark)`), its associated unused custom properties (`--accent`, `--code-bg`, `--social-bg`, `--mono`), and the unused `code`/`.counter` rules were removed. These predated this story, were not referenced anywhere else in `frontend/src/**` (confirmed via search), and the new design tokens do not define a dark palette, so keeping dead CSS around would have been inconsistent with the new single-source-of-truth token approach.
+- Task 9 (manual cross-viewport review) could not be performed with an actual resizable browser in this session (no viewport-resize/device-emulation tool was available). Responsiveness instead relies on the `@media (max-width: 640px)` rules added for the catalog grid, cart/orders tables-to-cards, and the order-status stepper, verified structurally by the passing test suite and a clean `npm run build`. A manual visual pass at ~375px/~1280px is recommended before this ships to production.
 
 ## Acceptance Criteria Mapping
 

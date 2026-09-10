@@ -72,45 +72,45 @@ frontend/src/
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Domain/Cart.cs` — new aggregate + `CartItem` + `AddItem`
-- [ ] `backend/tests/EPharmacy.Domain.Tests/CartTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Application/IMedicineRepository.cs` — add `FindByIdAsync(Guid id, CancellationToken)`
-- [ ] `backend/src/EPharmacy.Application/ICartRepository.cs` — new port (`GetOrCreateForUserAsync`, `SaveAsync`)
-- [ ] `backend/src/EPharmacy.Application/AddCartItemHandler.cs` — new handler + result type
-- [ ] `backend/tests/EPharmacy.Application.Tests/AddCartItemHandlerTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Infrastructure/MedicineRepository.cs` — implement `FindByIdAsync`
-- [ ] `backend/src/EPharmacy.Infrastructure/CartRepository.cs` — new, implements `ICartRepository`
-- [ ] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `DbSet<Cart> Carts`, `OwnsMany` config for `CartItem`
-- [ ] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddCarts.cs` — new EF Core migration
-- [ ] `backend/src/EPharmacy.Api/Endpoints/CartEndpoints.cs` — new, `MapCartEndpoints` with `POST /api/cart/items` and `GET /api/cart/summary` (both `.RequireAuthorization()`)
-- [ ] `backend/src/EPharmacy.Api/Program.cs` — DI registrations, `app.MapCartEndpoints()`
-- [ ] `backend/tests/EPharmacy.Api.Tests/CartEndpointTests.cs` — new
-- [ ] `frontend/src/context/CartContext.jsx` — new
-- [ ] `frontend/src/components/MedicineCard.jsx` — add "Add to cart" button + login redirect
-- [ ] `frontend/src/components/MedicineCard.test.jsx` — extend
-- [ ] `frontend/src/App.jsx` — cart badge in header (renders `CartContext`'s `itemCount` when logged in), wrap tree in `CartProvider`
+- [x] `backend/src/EPharmacy.Domain/Cart.cs` — new aggregate + `CartItem` + `AddItem`
+- [x] `backend/tests/EPharmacy.Domain.Tests/CartTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Application/IMedicineRepository.cs` — add `FindByIdAsync(Guid id, CancellationToken)`
+- [x] `backend/src/EPharmacy.Application/ICartRepository.cs` — new port (`GetOrCreateForUserAsync`, `SaveAsync`)
+- [x] `backend/src/EPharmacy.Application/AddCartItemHandler.cs` — new handler + result type
+- [x] `backend/tests/EPharmacy.Application.Tests/AddCartItemHandlerTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Infrastructure/MedicineRepository.cs` — implement `FindByIdAsync`
+- [x] `backend/src/EPharmacy.Infrastructure/CartRepository.cs` — new, implements `ICartRepository`
+- [x] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `DbSet<Cart> Carts`, `OwnsMany` config for `CartItem`
+- [x] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddCarts.cs` — new EF Core migration
+- [x] `backend/src/EPharmacy.Api/Endpoints/CartEndpoints.cs` — new, `MapCartEndpoints` with `POST /api/cart/items` and `GET /api/cart/summary` (both `.RequireAuthorization()`)
+- [x] `backend/src/EPharmacy.Api/Program.cs` — DI registrations, `app.MapCartEndpoints()`
+- [x] `backend/tests/EPharmacy.Api.Tests/CartEndpointTests.cs` — new
+- [x] `frontend/src/context/CartContext.jsx` — new
+- [x] `frontend/src/components/MedicineCard.jsx` — add "Add to cart" button + login redirect
+- [x] `frontend/src/components/MedicineCard.test.jsx` — extend
+- [x] `frontend/src/App.jsx` — cart badge in header (renders `CartContext`'s `itemCount` when logged in), wrap tree in `CartProvider`
 
 ## Task Breakdown
 
-1. [ ] Write `CartTests.cs` (red): `AddItem` on an empty cart adds a new line with the given quantity; adding the same `medicineId` again increments quantity instead of duplicating a line; `AddItem` with quantity `<= 0` throws. Implement `Cart.cs`/`CartItem` to go green.
-2. [ ] Write `AddCartItemHandlerTests.cs` (red), mocking `IMedicineRepository`/`ICartRepository`: unknown medicine returns a not-found result without touching the cart; known medicine adds/increments and saves, returning the new `itemCount`. Implement `ICartRepository`, `AddCartItemHandler` to go green.
-3. [ ] Add `FindByIdAsync` to `IMedicineRepository`/`MedicineRepository`.
-4. [ ] Implement `CartRepository`; add `DbSet<Cart> Carts` + `OwnsMany(c => c.Items)` configuration to `AppDbContext`; generate the `AddCarts` migration.
-5. [ ] Create `Endpoints/CartEndpoints.cs`: `POST /api/cart/items` (binds `{ medicineId, quantity }`, reads `userId` from the `NameIdentifier` claim, `404` for unknown medicine, `400` for `quantity <= 0`, `200 { itemCount }` on success); `GET /api/cart/summary` (`200 { itemCount }` for the current user). Both `.RequireAuthorization()`.
-6. [ ] Write `CartEndpointTests.cs`: adding a known medicine while authenticated returns `200` with the expected `itemCount`; adding the same medicine twice returns an incremented count, not two lines; adding an unknown medicine id returns `404`; calling either endpoint without a session returns `401`.
-7. [ ] Build `CartContext.jsx`: fetches `/api/cart/summary` once `AuthContext` resolves a logged-in user (skipped while logged out); `addItem(medicineId, quantity)` posts to `/api/cart/items` and updates `itemCount` from the response.
-8. [ ] Add the "Add to cart" button to `MedicineCard.jsx`: if `useAuth().user` is absent, `useNavigate()`s to `/login` instead of calling the API; otherwise calls `useCart().addItem(medicine.id, 1)`. Extend `MedicineCard.test.jsx` for both paths.
-9. [ ] Wrap the app tree in `CartProvider` (`App.jsx`) and render the cart badge (`itemCount`) in the header when logged in; extend `App.test.jsx`.
-10. [ ] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (add the same medicine twice while logged in, confirm the badge shows a combined count, not two lines; confirm a logged-out click redirects to `/login`), `node scripts/validate-repository.mjs`.
+1. [x] Write `CartTests.cs` (red): `AddItem` on an empty cart adds a new line with the given quantity; adding the same `medicineId` again increments quantity instead of duplicating a line; `AddItem` with quantity `<= 0` throws. Implement `Cart.cs`/`CartItem` to go green.
+2. [x] Write `AddCartItemHandlerTests.cs` (red), mocking `IMedicineRepository`/`ICartRepository`: unknown medicine returns a not-found result without touching the cart; known medicine adds/increments and saves, returning the new `itemCount`. Implement `ICartRepository`, `AddCartItemHandler` to go green.
+3. [x] Add `FindByIdAsync` to `IMedicineRepository`/`MedicineRepository`.
+4. [x] Implement `CartRepository`; add `DbSet<Cart> Carts` + `OwnsMany(c => c.Items)` configuration to `AppDbContext`; generate the `AddCarts` migration.
+5. [x] Create `Endpoints/CartEndpoints.cs`: `POST /api/cart/items` (binds `{ medicineId, quantity }`, reads `userId` from the `NameIdentifier` claim, `404` for unknown medicine, `400` for `quantity <= 0`, `200 { itemCount }` on success); `GET /api/cart/summary` (`200 { itemCount }` for the current user). Both `.RequireAuthorization()`.
+6. [x] Write `CartEndpointTests.cs`: adding a known medicine while authenticated returns `200` with the expected `itemCount`; adding the same medicine twice returns an incremented count, not two lines; adding an unknown medicine id returns `404`; calling either endpoint without a session returns `401`.
+7. [x] Build `CartContext.jsx`: fetches `/api/cart/summary` once `AuthContext` resolves a logged-in user (skipped while logged out); `addItem(medicineId, quantity)` posts to `/api/cart/items` and updates `itemCount` from the response.
+8. [x] Add the "Add to cart" button to `MedicineCard.jsx`: if `useAuth().user` is absent, `useNavigate()`s to `/login` instead of calling the API; otherwise calls `useCart().addItem(medicine.id, 1)`. Extend `MedicineCard.test.jsx` for both paths.
+9. [x] Wrap the app tree in `CartProvider` (`App.jsx`) and render the cart badge (`itemCount`) in the header when logged in; extend `App.test.jsx`.
+10. [x] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (add the same medicine twice while logged in, confirm the badge shows a combined count, not two lines; confirm a logged-out click redirects to `/login`), `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
 | Tasks | Commit message | Hash |
 |-------|-----------------|------|
-| 1–2 | `feat(backend): add Cart aggregate and AddCartItemHandler (TDD)` | |
-| 3–4 | `feat(backend): add EF Core persistence for carts` | |
-| 5–6 | `feat(backend): add POST /api/cart/items and GET /api/cart/summary` | |
-| 7–9 | `feat(frontend): add cart context, add-to-cart button, header badge` | |
+| 1–2 | `feat(backend): add Cart aggregate and AddCartItemHandler (TDD)` | `a4cf4c1` |
+| 3–4 | `feat(backend): add EF Core persistence for carts` | `b838568` |
+| 5–6 | `feat(backend): add POST /api/cart/items and GET /api/cart/summary` | `3d833fe` |
+| 7–9 | `feat(frontend): add cart context, add-to-cart button, header badge` | `297abbc` |
 | 10 | `docs(gen-e2): update story 07 and plan checkboxes` | |
 
 ## Acceptance Criteria Mapping
@@ -139,3 +139,11 @@ Depends on story 06 (`Medicine` entity, catalog UI) and story 04 (authenticated 
 ## Open Questions
 
 - Guest carts (add to cart before logging in, merge on login) are explicitly out of scope per the story's Notes — flagged again here since it's the most likely follow-up request.
+
+## Deviations
+
+- `Cart.Items` is exposed as a get-only `IReadOnlyCollection<CartItem>` computed from a private `_items` list, matching the plan's shape. EF Core's owned-collection mapping (`OwnsMany`) needed an explicit `entity.Navigation(c => c.Items).HasField("_items").UsePropertyAccessMode(PropertyAccessMode.Field)` call since the navigation has no public setter for EF's default convention to bind to.
+- `CartRepository.SaveAsync` checks `EntityState.Detached` before calling `Update`, since `GetOrCreateForUserAsync` already attaches newly created carts via `Add` — this avoids a duplicate-tracking exception when a handler calls `GetOrCreateForUserAsync` then `SaveAsync` in the same request.
+- `CartEndpointTests.cs` fetches a real medicine id from `GET /api/medicines` (seeded dev data) rather than hardcoding one, keeping the test independent of seed ordering.
+- Frontend: `CatalogPage.test.jsx` needed to be wrapped in `AuthProvider`/`CartProvider`/`MemoryRouter` (previously rendered `CatalogPage` standalone) because `MedicineCard` now calls `useAuth()`/`useCart()`/`useNavigate()`. Same wrapping was added to `MedicineCard.test.jsx`, plus two new tests for the logged-in/logged-out add-to-cart paths.
+- `react-hooks/set-state-in-effect` lint rule required removing a synchronous `setItemCount(0)` reset on logout from `CartContext`'s effect; since the header badge is only rendered while `user` is truthy, a stale `itemCount` after logout has no visible effect, so the reset was dropped rather than deferred.

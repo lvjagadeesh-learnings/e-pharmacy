@@ -63,38 +63,38 @@ frontend/src/
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Domain/Cart.cs` — add `UpdateItemQuantity`, `RemoveItem`
-- [ ] `backend/tests/EPharmacy.Domain.Tests/CartTests.cs` — extend (TDD)
-- [ ] `backend/src/EPharmacy.Application/GetCartHandler.cs` — new + `CartLineDto`/`CartDto`
-- [ ] `backend/src/EPharmacy.Application/UpdateCartItemHandler.cs` — new
-- [ ] `backend/src/EPharmacy.Application/RemoveCartItemHandler.cs` — new
-- [ ] `backend/tests/EPharmacy.Application.Tests/GetCartHandlerTests.cs` — new, written first (TDD)
-- [ ] `backend/tests/EPharmacy.Application.Tests/UpdateCartItemHandlerTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Api/Endpoints/CartEndpoints.cs` — add `GET /api/cart`, `PATCH /api/cart/items/{medicineId}`, `DELETE /api/cart/items/{medicineId}`
-- [ ] `backend/tests/EPharmacy.Api.Tests/CartEndpointTests.cs` — extend
-- [ ] `frontend/src/pages/CartPage.jsx` — new + `CartPage.test.jsx`
-- [ ] `frontend/src/context/CartContext.jsx` — add `refreshCount()`
-- [ ] `frontend/src/App.jsx` — add `/cart` route (`RequireAuth`), link header badge to `/cart`
+- [x] `backend/src/EPharmacy.Domain/Cart.cs` — add `UpdateItemQuantity`, `RemoveItem`
+- [x] `backend/tests/EPharmacy.Domain.Tests/CartTests.cs` — extend (TDD)
+- [x] `backend/src/EPharmacy.Application/GetCartHandler.cs` — new + `CartLineDto`/`CartDto`
+- [x] `backend/src/EPharmacy.Application/UpdateCartItemHandler.cs` — new
+- [x] `backend/src/EPharmacy.Application/RemoveCartItemHandler.cs` — new
+- [x] `backend/tests/EPharmacy.Application.Tests/GetCartHandlerTests.cs` — new, written first (TDD)
+- [x] `backend/tests/EPharmacy.Application.Tests/UpdateCartItemHandlerTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Api/Endpoints/CartEndpoints.cs` — add `GET /api/cart`, `PATCH /api/cart/items/{medicineId}`, `DELETE /api/cart/items/{medicineId}`
+- [x] `backend/tests/EPharmacy.Api.Tests/CartEndpointTests.cs` — extend
+- [x] `frontend/src/pages/CartPage.jsx` — new + `CartPage.test.jsx`
+- [x] `frontend/src/context/CartContext.jsx` — add `refreshCount()`
+- [x] `frontend/src/App.jsx` — add `/cart` route (`RequireAuth`), link header badge to `/cart`
 
 ## Task Breakdown
 
-1. [ ] Extend `CartTests.cs` (red): `UpdateItemQuantity` replaces an existing line's quantity and throws for an unknown `medicineId`; `RemoveItem` removes an existing line and is a no-op for an unknown one. Implement both methods to go green.
-2. [ ] Write `GetCartHandlerTests.cs` (red), mocking both ports: builds `CartLineDto`s from cart items joined with medicine data, computes the correct `subtotalCents`, and returns an empty `lines` array for an empty cart. Implement `GetCartHandler`/DTOs to go green.
-3. [ ] Write `UpdateCartItemHandlerTests.cs` (red): `quantity > 0` updates the line; `quantity <= 0` removes it instead. Implement `UpdateCartItemHandler`, `RemoveCartItemHandler` to go green.
-4. [ ] Add `GET /api/cart`, `PATCH /api/cart/items/{medicineId}`, `DELETE /api/cart/items/{medicineId}` to `CartEndpoints.cs` (all `.RequireAuthorization()`); register new handlers in `Program.cs`.
-5. [ ] Extend `CartEndpointTests.cs`: `GET /api/cart` returns lines + subtotal for a populated cart and an empty array for a new user; `PATCH` updates a quantity; `PATCH` with `quantity: 0` removes the line; `DELETE` removes a line and is safe to call twice.
-6. [ ] Add `refreshCount()` to `CartContext.jsx` (re-fetches `/api/cart/summary`).
-7. [ ] Build `CartPage.jsx`: loading/empty/populated states, a quantity stepper and remove button per line, running subtotal; every mutation re-fetches the cart and calls `refreshCount()`. Write `CartPage.test.jsx` covering all states plus a quantity-change and a remove interaction.
-8. [ ] Add the `/cart` route (`RequireAuth`) to `App.jsx`; make the header cart badge a link to `/cart`.
-9. [ ] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (add two medicines, change a quantity, remove one, confirm the subtotal and header badge both update), `node scripts/validate-repository.mjs`.
+1. [x] Extend `CartTests.cs` (red): `UpdateItemQuantity` replaces an existing line's quantity and throws for an unknown `medicineId`; `RemoveItem` removes an existing line and is a no-op for an unknown one. Implement both methods to go green.
+2. [x] Write `GetCartHandlerTests.cs` (red), mocking both ports: builds `CartLineDto`s from cart items joined with medicine data, computes the correct `subtotalCents`, and returns an empty `lines` array for an empty cart. Implement `GetCartHandler`/DTOs to go green.
+3. [x] Write `UpdateCartItemHandlerTests.cs` (red): `quantity > 0` updates the line; `quantity <= 0` removes it instead. Implement `UpdateCartItemHandler`, `RemoveCartItemHandler` to go green.
+4. [x] Add `GET /api/cart`, `PATCH /api/cart/items/{medicineId}`, `DELETE /api/cart/items/{medicineId}` to `CartEndpoints.cs` (all `.RequireAuthorization()`); register new handlers in `Program.cs`.
+5. [x] Extend `CartEndpointTests.cs`: `GET /api/cart` returns lines + subtotal for a populated cart and an empty array for a new user; `PATCH` updates a quantity; `PATCH` with `quantity: 0` removes the line; `DELETE` removes a line and is safe to call twice.
+6. [x] Add `refreshCount()` to `CartContext.jsx` (re-fetches `/api/cart/summary`).
+7. [x] Build `CartPage.jsx`: loading/empty/populated states, a quantity stepper and remove button per line, running subtotal; every mutation re-fetches the cart and calls `refreshCount()`. Write `CartPage.test.jsx` covering all states plus a quantity-change and a remove interaction.
+8. [x] Add the `/cart` route (`RequireAuth`) to `App.jsx`; make the header cart badge a link to `/cart`.
+9. [x] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (add two medicines, change a quantity, remove one, confirm the subtotal and header badge both update), `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
 | Tasks | Commit message | Hash |
 |-------|-----------------|------|
-| 1–3 | `feat(backend): add cart quantity update/remove behavior and handlers (TDD)` | |
-| 4–5 | `feat(backend): add GET/PATCH/DELETE cart endpoints` | |
-| 6–8 | `feat(frontend): add cart page with quantity and remove controls` | |
+| 1–3 | `feat(backend): add cart quantity update/remove behavior and handlers (TDD)` | `877782e` |
+| 4–5 | `feat(backend): add GET/PATCH/DELETE cart endpoints` | `4f288d8` |
+| 6–8 | `feat(frontend): add cart page with quantity and remove controls` | `483ace1` |
 | 9 | `docs(gen-e2): update story 08 and plan checkboxes` | |
 
 ## Acceptance Criteria Mapping
@@ -124,3 +124,9 @@ Depends on story 07 (`Cart` aggregate, `ICartRepository`, `CartContext`, header 
 ## Open Questions
 
 None.
+
+## Deviations
+
+- The quantity stepper is a plain `<input type="number" min="0">` rather than separate +/- buttons — simpler to implement and test, and satisfies the AC ("change quantity") without prescribing a specific control.
+- `CartPage`'s effect fetches `/api/cart` directly (not through `loadCart`) to avoid the `react-hooks/set-state-in-effect` lint rule flagging a function-call-that-sets-state inside the effect body; `loadCart` (a `useCallback`) is reused only from the post-mutation handlers, which run outside any effect.
+- `GetCartHandler` skips any cart line whose medicine can no longer be found (defensive; not expected to happen since medicines aren't deleted in this app, but keeps the handler from throwing on stale data).

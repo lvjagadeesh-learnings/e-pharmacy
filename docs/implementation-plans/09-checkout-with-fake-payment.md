@@ -93,43 +93,43 @@ frontend/src/
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Domain/Order.cs` — new aggregate + `OrderItem`
-- [ ] `backend/tests/EPharmacy.Domain.Tests/OrderTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Application/IPaymentGateway.cs` — new port + `PaymentRequest`/`PaymentResult`
-- [ ] `backend/src/EPharmacy.Application/IOrderRepository.cs` — new port
-- [ ] `backend/src/EPharmacy.Application/PlaceOrderHandler.cs` — new handler + result type
-- [ ] `backend/tests/EPharmacy.Application.Tests/PlaceOrderHandlerTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Infrastructure/FakePaymentGateway.cs` — new, implements `IPaymentGateway`
-- [ ] `backend/src/EPharmacy.Infrastructure/OrderRepository.cs` — new, implements `IOrderRepository`
-- [ ] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `DbSet<Order> Orders`, `OwnsMany` config for `OrderItem`
-- [ ] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddOrders.cs` — new EF Core migration
-- [ ] `backend/src/EPharmacy.Api/Endpoints/OrderEndpoints.cs` — new, `MapOrderEndpoints` with `POST /api/checkout`, `GET /api/orders/{orderId}`
-- [ ] `backend/src/EPharmacy.Api/Program.cs` — DI registrations, `app.MapOrderEndpoints()`
-- [ ] `backend/tests/EPharmacy.Api.Tests/OrderEndpointTests.cs` — new
-- [ ] `frontend/src/pages/CheckoutPage.jsx` — new + `CheckoutPage.test.jsx`
-- [ ] `frontend/src/pages/OrderConfirmationPage.jsx` — new + `OrderConfirmationPage.test.jsx`
-- [ ] `frontend/src/App.jsx` — add `/checkout` and `/orders/:orderId` routes (both `RequireAuth`)
+- [x] `backend/src/EPharmacy.Domain/Order.cs` — new aggregate + `OrderItem`
+- [x] `backend/tests/EPharmacy.Domain.Tests/OrderTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Application/IPaymentGateway.cs` — new port + `PaymentRequest`/`PaymentResult`
+- [x] `backend/src/EPharmacy.Application/IOrderRepository.cs` — new port
+- [x] `backend/src/EPharmacy.Application/PlaceOrderHandler.cs` — new handler + result type
+- [x] `backend/tests/EPharmacy.Application.Tests/PlaceOrderHandlerTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Infrastructure/FakePaymentGateway.cs` — new, implements `IPaymentGateway`
+- [x] `backend/src/EPharmacy.Infrastructure/OrderRepository.cs` — new, implements `IOrderRepository`
+- [x] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `DbSet<Order> Orders`, `OwnsMany` config for `OrderItem`
+- [x] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddOrders.cs` — new EF Core migration
+- [x] `backend/src/EPharmacy.Api/Endpoints/OrderEndpoints.cs` — new, `MapOrderEndpoints` with `POST /api/checkout`, `GET /api/orders/{orderId}`
+- [x] `backend/src/EPharmacy.Api/Program.cs` — DI registrations, `app.MapOrderEndpoints()`
+- [x] `backend/tests/EPharmacy.Api.Tests/OrderEndpointTests.cs` — new
+- [x] `frontend/src/pages/CheckoutPage.jsx` — new + `CheckoutPage.test.jsx`
+- [x] `frontend/src/pages/OrderConfirmationPage.jsx` — new + `OrderConfirmationPage.test.jsx`
+- [x] `frontend/src/App.jsx` — add `/checkout` and `/orders/:orderId` routes (both `RequireAuth`)
 
 ## Task Breakdown
 
-1. [ ] Write `OrderTests.cs` (red): `Create` computes `TotalCents` from item unit prices × quantities, rejects an empty item collection and an empty shipping address. Implement `Order.cs`/`OrderItem` to go green.
-2. [ ] Write `PlaceOrderHandlerTests.cs` (red), mocking `ICartRepository`/`IMedicineRepository`/`IPaymentGateway`/`IOrderRepository`: empty cart fails without calling the payment gateway; a declined payment returns a failure result *and* neither creates an order nor clears the cart; a successful payment creates the order with correct snapshot totals and clears the cart. Implement `IPaymentGateway`, `IOrderRepository`, `PlaceOrderHandler` to go green.
-3. [ ] Implement `FakePaymentGateway` (declines only the fixed test card number, succeeds otherwise) and `OrderRepository`; add `DbSet<Order> Orders` + `OwnsMany` config to `AppDbContext`; generate the `AddOrders` migration.
-4. [ ] Create `Endpoints/OrderEndpoints.cs`: `POST /api/checkout` (binds shipping address + card fields, `400` for an empty cart or missing fields, `402` for a decline, `201 { orderId, referenceNumber, totalCents }` on success); `GET /api/orders/{orderId}` (`404` if missing or not owned by the caller, otherwise the order's items/total/reference/placed-at).
-5. [ ] Write `OrderEndpointTests.cs`: checkout with a non-empty cart and a normal card succeeds and clears the cart (verify via a follow-up `GET /api/cart/summary` returning `itemCount: 0`); checkout with the fixed decline test card returns `402` and leaves the cart populated; checkout with an empty cart returns `400`; fetching another user's order returns `404`.
-6. [ ] Build `CheckoutPage.jsx`: shows cart summary (reusing `GET /api/cart`), a shipping-address form, fake card fields with basic format checks; on submit, posts to `/api/checkout`; on `201` navigates to `/orders/:orderId`; on `402` shows the decline message inline, form and cart untouched. Write `CheckoutPage.test.jsx` covering the success and decline paths.
-7. [ ] Build `OrderConfirmationPage.jsx`: fetches `GET /api/orders/:orderId`, shows reference number, items, and total. Write `OrderConfirmationPage.test.jsx`.
-8. [ ] Add `/checkout` and `/orders/:orderId` routes (both `RequireAuth`) to `App.jsx`.
-9. [ ] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (check out with a normal card → confirmation page with correct total; check out with the fixed decline test card → error shown, cart still has its items), `node scripts/validate-repository.mjs`.
+1. [x] Write `OrderTests.cs` (red): `Create` computes `TotalCents` from item unit prices × quantities, rejects an empty item collection and an empty shipping address. Implement `Order.cs`/`OrderItem` to go green.
+2. [x] Write `PlaceOrderHandlerTests.cs` (red), mocking `ICartRepository`/`IMedicineRepository`/`IPaymentGateway`/`IOrderRepository`: empty cart fails without calling the payment gateway; a declined payment returns a failure result *and* neither creates an order nor clears the cart; a successful payment creates the order with correct snapshot totals and clears the cart. Implement `IPaymentGateway`, `IOrderRepository`, `PlaceOrderHandler` to go green.
+3. [x] Implement `FakePaymentGateway` (declines only the fixed test card number, succeeds otherwise) and `OrderRepository`; add `DbSet<Order> Orders` + `OwnsMany` config to `AppDbContext`; generate the `AddOrders` migration.
+4. [x] Create `Endpoints/OrderEndpoints.cs`: `POST /api/checkout` (binds shipping address + card fields, `400` for an empty cart or missing fields, `402` for a decline, `201 { orderId, referenceNumber, totalCents }` on success); `GET /api/orders/{orderId}` (`404` if missing or not owned by the caller, otherwise the order's items/total/reference/placed-at).
+5. [x] Write `OrderEndpointTests.cs`: checkout with a non-empty cart and a normal card succeeds and clears the cart (verify via a follow-up `GET /api/cart/summary` returning `itemCount: 0`); checkout with the fixed decline test card returns `402` and leaves the cart populated; checkout with an empty cart returns `400`; fetching another user's order returns `404`.
+6. [x] Build `CheckoutPage.jsx`: shows cart summary (reusing `GET /api/cart`), a shipping-address form, fake card fields with basic format checks; on submit, posts to `/api/checkout`; on `201` navigates to `/orders/:orderId`; on `402` shows the decline message inline, form and cart untouched. Write `CheckoutPage.test.jsx` covering the success and decline paths.
+7. [x] Build `OrderConfirmationPage.jsx`: fetches `GET /api/orders/:orderId`, shows reference number, items, and total. Write `OrderConfirmationPage.test.jsx`.
+8. [x] Add `/checkout` and `/orders/:orderId` routes (both `RequireAuth`) to `App.jsx`.
+9. [x] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (check out with a normal card → confirmation page with correct total; check out with the fixed decline test card → error shown, cart still has its items), `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
 | Tasks | Commit message | Hash |
 |-------|-----------------|------|
-| 1–2 | `feat(backend): add Order aggregate and PlaceOrderHandler (TDD)` | |
-| 3 | `feat(backend): add fake payment gateway and order persistence` | |
-| 4–5 | `feat(backend): add POST /api/checkout and GET /api/orders/{orderId}` | |
-| 6–8 | `feat(frontend): add checkout page and order confirmation page` | |
+| 1–2 | `feat(backend): add Order aggregate and PlaceOrderHandler (TDD)` | `95e8bb8` |
+| 3 | `feat(backend): add fake payment gateway and order persistence` | `159b14d` |
+| 4–5 | `feat(backend): add POST /api/checkout and GET /api/orders/{orderId}` | `66e511f` |
+| 6–8 | `feat(frontend): add checkout page and order confirmation page` | `5afa24c` |
 | 9 | `docs(gen-e2): update story 09 and plan checkboxes` | |
 
 ## Acceptance Criteria Mapping
@@ -159,3 +159,9 @@ Depends on story 08 (`Cart`, `GET /api/cart`) and story 04 (authenticated sessio
 ## Open Questions
 
 - The fixed "always declines" test card number is invented for this plan (documented in code/tests) — confirm this convention is acceptable, or suggest a different way to trigger a simulated failure (e.g. a client-side "simulate failure" toggle) if a hidden test-card number feels too obscure for demo purposes.
+
+## Deviations
+
+- `Order`'s private constructor was refactored to drop the `items` collection parameter (mirroring `Cart`'s pattern): it now constructs with only scalar properties, and `Order.Create` populates the backing `_items` field via `order._items.AddRange(items)` after construction. This was required for EF Core to correctly materialize the `OwnsMany` owned-collection navigation via backing-field access (`entity.Navigation(o => o.Items).HasField("_items")`) — a constructor parameter for the collection is incompatible with EF's owned-collection materialization.
+- Added a "Proceed to checkout" link on `CartPage.jsx` (not explicitly listed in File Changes) to complete the cart → checkout navigation path.
+- Manual smoke test was performed via a Python script (`urllib` + cookie jar) rather than raw `curl`, to reliably handle session cookies and JSON parsing across multiple sequential requests (register → add to cart → checkout success → checkout empty-cart failure → checkout decline). All scenarios passed: successful checkout (`201`, cart cleared), empty-cart checkout (`400`), and declined-card checkout (`402`, cart preserved).

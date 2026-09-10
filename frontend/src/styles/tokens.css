@@ -1,0 +1,58 @@
+/*
+ * Design tokens for the e-Pharmacy app.
+ * A calm, trustworthy healthcare-adjacent palette with a small spacing/type scale.
+ * NOTE: no brand guidance was provided for this project — these are reasonable
+ * invented defaults (see docs/implementation-plans/13-modern-contemporary-ui-design.md,
+ * Open Questions).
+ */
+:root {
+  /* Color */
+  --color-primary: #0f6e63;
+  --color-primary-dark: #0b5148;
+  --color-primary-on: #ffffff;
+  --color-secondary: #2d6cdf;
+  --color-secondary-on: #ffffff;
+  --color-success: #1b8a5a;
+  --color-success-on: #ffffff;
+  --color-error: #c22a3a;
+  --color-error-on: #ffffff;
+  --color-error-bg: #fdecee;
+  --color-accent: #f2994a;
+  --color-accent-2: #863bff;
+
+  --color-bg: #f7f9f8;
+  --color-surface: #ffffff;
+  --color-border: #d8dee0;
+  --color-text: #1f2a2d;
+  --color-text-muted: #5b6b6e;
+  --color-focus: #2d6cdf;
+
+  --gradient-header: linear-gradient(135deg, #0f6e63 0%, #2d6cdf 100%);
+  --gradient-header-on: #ffffff;
+
+  /* Motion */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Type */
+  --font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 20px;
+  --font-size-xl: 28px;
+  --line-height-base: 1.5;
+
+  /* Shape */
+  --radius: 8px;
+  --shadow: 0 4px 10px rgba(15, 42, 45, 0.08);
+  --shadow-hover: 0 10px 24px rgba(15, 42, 45, 0.16);
+}

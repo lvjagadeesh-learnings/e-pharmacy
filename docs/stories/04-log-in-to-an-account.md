@@ -1,6 +1,6 @@
 # User Story: 04 — Log in to an existing account
 
-**Status:** ready
+**Status:** done
 
 **As a** registered user,
 **I want** to log in with my email and password,
@@ -8,10 +8,10 @@
 
 ## Acceptance Criteria
 
-- [ ] A login form accepts email and password
-- [ ] Invalid credentials show a clear error without revealing whether the email exists
-- [ ] Successful login establishes an authenticated session and redirects into the app
-- [ ] Protected areas (cart, orders, reviews, membership) are inaccessible while logged out
+- [x] A login form accepts email and password
+- [x] Invalid credentials show a clear error without revealing whether the email exists
+- [x] Successful login establishes an authenticated session and redirects into the app
+- [x] Protected areas (cart, orders, reviews, membership) are inaccessible while logged out
 
 ## Notes
 

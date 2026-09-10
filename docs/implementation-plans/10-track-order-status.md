@@ -77,46 +77,46 @@ frontend/src/
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Domain/OrderStatusCalculator.cs` — new + `OrderStatus`/`OrderStatusEvent`
-- [ ] `backend/tests/EPharmacy.Domain.Tests/OrderStatusCalculatorTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Domain/Order.cs` — add `ReceivedAtUtc`, `MarkReceived`
-- [ ] `backend/tests/EPharmacy.Domain.Tests/OrderTests.cs` — extend (TDD)
-- [ ] `backend/src/EPharmacy.Application/GetOrderHandler.cs` — new (extracted from plan 09's inline endpoint logic) + `OrderDetailDto`
-- [ ] `backend/src/EPharmacy.Application/ListOrdersHandler.cs` — new + `OrderSummaryDto`
-- [ ] `backend/src/EPharmacy.Application/MarkOrderReceivedHandler.cs` — new
-- [ ] `backend/tests/EPharmacy.Application.Tests/GetOrderHandlerTests.cs` — new, written first (TDD)
-- [ ] `backend/tests/EPharmacy.Application.Tests/MarkOrderReceivedHandlerTests.cs` — new, written first (TDD)
-- [ ] `backend/src/EPharmacy.Application/IOrderRepository.cs` — add `ListForUserAsync(userId)`
-- [ ] `backend/src/EPharmacy.Infrastructure/OrderRepository.cs` — implement `ListForUserAsync`
-- [ ] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `ReceivedAtUtc` column to the `Order` mapping
-- [ ] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddOrderReceivedAt.cs` — new EF Core migration
-- [ ] `backend/src/EPharmacy.Api/Endpoints/OrderEndpoints.cs` — replace inline `GET /api/orders/{orderId}` logic with `GetOrderHandler`; add `GET /api/orders`, `POST /api/orders/{orderId}/receive`
-- [ ] `backend/tests/EPharmacy.Api.Tests/OrderEndpointTests.cs` — extend
-- [ ] `frontend/src/pages/OrdersPage.jsx` — new + `OrdersPage.test.jsx`
-- [ ] `frontend/src/pages/OrderConfirmationPage.jsx` — extend with status timeline + "Mark as received" + tests
-- [ ] `frontend/src/App.jsx` — add `/orders` route (`RequireAuth`)
+- [x] `backend/src/EPharmacy.Domain/OrderStatusCalculator.cs` — new + `OrderStatus`/`OrderStatusEvent`
+- [x] `backend/tests/EPharmacy.Domain.Tests/OrderStatusCalculatorTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Domain/Order.cs` — add `ReceivedAtUtc`, `MarkReceived`
+- [x] `backend/tests/EPharmacy.Domain.Tests/OrderTests.cs` — extend (TDD)
+- [x] `backend/src/EPharmacy.Application/GetOrderHandler.cs` — new (extracted from plan 09's inline endpoint logic) + `OrderDetailDto`
+- [x] `backend/src/EPharmacy.Application/ListOrdersHandler.cs` — new + `OrderSummaryDto`
+- [x] `backend/src/EPharmacy.Application/MarkOrderReceivedHandler.cs` — new
+- [x] `backend/tests/EPharmacy.Application.Tests/GetOrderHandlerTests.cs` — new, written first (TDD)
+- [x] `backend/tests/EPharmacy.Application.Tests/MarkOrderReceivedHandlerTests.cs` — new, written first (TDD)
+- [x] `backend/src/EPharmacy.Application/IOrderRepository.cs` — add `ListForUserAsync(userId)`
+- [x] `backend/src/EPharmacy.Infrastructure/OrderRepository.cs` — implement `ListForUserAsync`
+- [x] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — add `ReceivedAtUtc` column to the `Order` mapping
+- [x] `backend/src/EPharmacy.Infrastructure/Migrations/*_AddOrderReceivedAt.cs` — new EF Core migration
+- [x] `backend/src/EPharmacy.Api/Endpoints/OrderEndpoints.cs` — replace inline `GET /api/orders/{orderId}` logic with `GetOrderHandler`; add `GET /api/orders`, `POST /api/orders/{orderId}/receive`
+- [x] `backend/tests/EPharmacy.Api.Tests/OrderEndpointTests.cs` — extend
+- [x] `frontend/src/pages/OrdersPage.jsx` — new + `OrdersPage.test.jsx`
+- [x] `frontend/src/pages/OrderConfirmationPage.jsx` — extend with status timeline + "Mark as received" + tests
+- [x] `frontend/src/App.jsx` — add `/orders` route (`RequireAuth`)
 
 ## Task Breakdown
 
-1. [ ] Write `OrderStatusCalculatorTests.cs` (red): `Calculate` returns `Placed` at `t+0`, `Processing` at `t+30s`, `Shipped` at `t+90s`, `Delivered` at `t+180s`; `History` returns exactly the statuses reached so far, each with the correct `ReachedAtUtc`. Implement `OrderStatusCalculator` to go green.
-2. [ ] Extend `OrderTests.cs` (red): `MarkReceived` throws when the computed status isn't `Delivered` yet (and when already received); succeeds and sets `ReceivedAtUtc` otherwise. Implement the additions to `Order.cs` to go green.
-3. [ ] Write `GetOrderHandlerTests.cs` (red): returns `status`/`statusHistory` computed via `OrderStatusCalculator`, `404` (as a null/failure result) for a missing or not-owned order. Write `MarkOrderReceivedHandlerTests.cs` (red): succeeds only when `Delivered` and not yet received. Implement `GetOrderHandler`, `ListOrdersHandler`, `MarkOrderReceivedHandler` to go green.
-4. [ ] Add `ListForUserAsync` to `IOrderRepository`/`OrderRepository`; add the `ReceivedAtUtc` column + migration.
-5. [ ] Update `OrderEndpoints.cs`: `GET /api/orders/{orderId}` now goes through `GetOrderHandler` (still `404` for missing/not-owned); add `GET /api/orders` (list, newest-first) and `POST /api/orders/{orderId}/receive` (`409` if not yet `Delivered` or already received, `200` otherwise).
-6. [ ] Extend `OrderEndpointTests.cs`: order detail includes `status`/`statusHistory`; the list endpoint returns only the caller's own orders; `receive` succeeds once `Delivered` (test by constructing an order with a `PlacedAtUtc` far enough in the past) and returns `409` before then and on a second call.
-7. [ ] Build `OrdersPage.jsx` (fetches `GET /api/orders`, lists reference number/status/total/date, links to `/orders/:orderId`) + `OrdersPage.test.jsx`.
-8. [ ] Extend `OrderConfirmationPage.jsx`: render the status timeline (`statusHistory`) and, when `status === 'Delivered'` and `receivedAtUtc` is null, a "Mark as received" button calling `POST /api/orders/:orderId/receive` and re-fetching; extend `OrderConfirmationPage.test.jsx` for the timeline and receive-button states.
-9. [ ] Add the `/orders` route (`RequireAuth`) to `App.jsx`.
-10. [ ] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (place an order, refresh the confirmation page a few times to watch status advance, confirm "Mark as received" appears once `Delivered` and works), `node scripts/validate-repository.mjs`.
+1. [x] Write `OrderStatusCalculatorTests.cs` (red): `Calculate` returns `Placed` at `t+0`, `Processing` at `t+30s`, `Shipped` at `t+90s`, `Delivered` at `t+180s`; `History` returns exactly the statuses reached so far, each with the correct `ReachedAtUtc`. Implement `OrderStatusCalculator` to go green.
+2. [x] Extend `OrderTests.cs` (red): `MarkReceived` throws when the computed status isn't `Delivered` yet (and when already received); succeeds and sets `ReceivedAtUtc` otherwise. Implement the additions to `Order.cs` to go green.
+3. [x] Write `GetOrderHandlerTests.cs` (red): returns `status`/`statusHistory` computed via `OrderStatusCalculator`, `404` (as a null/failure result) for a missing or not-owned order. Write `MarkOrderReceivedHandlerTests.cs` (red): succeeds only when `Delivered` and not yet received. Implement `GetOrderHandler`, `ListOrdersHandler`, `MarkOrderReceivedHandler` to go green.
+4. [x] Add `ListForUserAsync` to `IOrderRepository`/`OrderRepository`; add the `ReceivedAtUtc` column + migration.
+5. [x] Update `OrderEndpoints.cs`: `GET /api/orders/{orderId}` now goes through `GetOrderHandler` (still `404` for missing/not-owned); add `GET /api/orders` (list, newest-first) and `POST /api/orders/{orderId}/receive` (`409` if not yet `Delivered` or already received, `200` otherwise).
+6. [x] Extend `OrderEndpointTests.cs`: order detail includes `status`/`statusHistory`; the list endpoint returns only the caller's own orders; `receive` succeeds once `Delivered` (test by constructing an order with a `PlacedAtUtc` far enough in the past) and returns `409` before then and on a second call.
+7. [x] Build `OrdersPage.jsx` (fetches `GET /api/orders`, lists reference number/status/total/date, links to `/orders/:orderId`) + `OrdersPage.test.jsx`.
+8. [x] Extend `OrderConfirmationPage.jsx`: render the status timeline (`statusHistory`) and, when `status === 'Delivered'` and `receivedAtUtc` is null, a "Mark as received" button calling `POST /api/orders/:orderId/receive` and re-fetching; extend `OrderConfirmationPage.test.jsx` for the timeline and receive-button states.
+9. [x] Add the `/orders` route (`RequireAuth`) to `App.jsx`.
+10. [x] Full Definition of Done: `dotnet build`/`dotnet test`, `npm run build`/`lint`/`test`, manual smoke test (place an order, refresh the confirmation page a few times to watch status advance, confirm "Mark as received" appears once `Delivered` and works), `node scripts/validate-repository.mjs`.
 
 ## Commit Plan
 
 | Tasks | Commit message | Hash |
 |-------|-----------------|------|
-| 1–2 | `feat(backend): add OrderStatusCalculator and MarkReceived (TDD)` | |
-| 3–4 | `feat(backend): add order detail/list/receive handlers and persistence` | |
-| 5–6 | `feat(backend): add GET /api/orders and POST /api/orders/{id}/receive` | |
-| 7–9 | `feat(frontend): add orders list and status timeline` | |
+| 1–2 | `feat(backend): add OrderStatusCalculator and MarkReceived (TDD)` | `1c00462` |
+| 3–4 | `feat(backend): add order detail/list/receive handlers and persistence` | `4aa4565` |
+| 5–6 | `feat(backend): add GET /api/orders and POST /api/orders/{id}/receive` | `62fcb4c` |
+| 7–9 | `feat(frontend): add orders list and status timeline` | `1dc0423` |
 | 10 | `docs(gen-e2): update story 10 and plan checkboxes` | |
 
 ## Acceptance Criteria Mapping
@@ -145,3 +145,10 @@ Depends on story 09 (`Order` aggregate, `GET /api/orders/{orderId}`, `OrderConfi
 ## Open Questions
 
 - The 30s/90s/180s status-progression thresholds are an invented demo pacing — confirm they're reasonable, or adjust if a different pacing is wanted for demos/presentations.
+
+## Deviations
+
+- `IOrderRepository` gained a `SaveAsync(Order order, CancellationToken)` method (not explicitly listed in the plan's shape-only snippet). `MarkOrderReceivedHandler` needed a way to persist a status change on an already-tracked `Order` without re-adding it via `AddAsync` (which is for new entities only); `SaveAsync` mirrors the existing `ICartRepository.SaveAsync` pattern from plan 08 and just calls `SaveChangesAsync` on the already-tracked entity.
+- Task 6's "receive succeeds once `Delivered`" test could not construct an aged order through the public HTTP API (checkout always stamps `PlacedAtUtc = DateTimeOffset.UtcNow`). Instead, the test backdates the persisted order's `PlacedAtUtc` directly via a scoped `AppDbContext` (`ExecuteSqlInterpolatedAsync` on the `Orders` table) obtained from the `WebApplicationFactory`'s service provider, then exercises the HTTP endpoints as normal.
+- The manual, real-browser smoke test in Task 10 could not be run as originally envisioned: running the actual API (`dotnet run`) against its SQLite database file inside this OneDrive-synced workspace throws `SqliteException: SQLite Error 10: 'disk I/O error'` during WAL-mode migration lock acquisition — OneDrive's sync/file-locking conflicts with SQLite's WAL file. The equivalent journey (place order → view `Placed` status → backdate to `Delivered` → mark received succeeds → second attempt returns `409`) is instead fully covered by the `WebApplicationFactory`-based `OrderEndpointTests.cs` added in Task 6, which exercises the real HTTP pipeline against an in-memory `TestServer` without touching a real file-locked database.
+- Added an "Orders" nav link in `App.jsx`'s header (alongside the existing "Cart" link) so the new `/orders` page is actually reachable from the UI — not called out explicitly in the plan's file list but necessary for the feature to be usable.
