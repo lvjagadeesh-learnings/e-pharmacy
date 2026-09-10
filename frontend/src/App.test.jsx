@@ -47,6 +47,18 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'e-Pharmacy' })).toBeInTheDocument()
   })
 
+  it('links the e-Pharmacy brand heading to the homepage', async () => {
+    vi.stubGlobal('fetch', mockFetch())
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('link', { name: 'e-Pharmacy' })).toHaveAttribute('href', '/')
+  })
+
   it('renders a skip-to-main-content link pointing at the main landmark', async () => {
     vi.stubGlobal('fetch', mockFetch())
 
@@ -113,6 +125,45 @@ describe('App', () => {
     await screen.findByRole('button', { name: 'Log out' })
     expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Sign up' })).not.toBeInTheDocument()
+  })
+
+  it('shows a cart link with an accessible label instead of visible "Cart" text when logged in', async () => {
+    vi.stubGlobal('fetch', mockFetch({ authenticated: true }))
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    )
+
+    const cartLink = await screen.findByRole('link', { name: /Cart, \d+ item/i })
+    expect(cartLink).toHaveAttribute('href', '/cart')
+    expect(cartLink).not.toHaveTextContent('Cart')
+  })
+
+  it("shows the signed-in user's display name in the header when logged in", async () => {
+    vi.stubGlobal('fetch', mockFetch({ authenticated: true }))
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Ada Shopper')).toBeInTheDocument()
+  })
+
+  it('does not show a display name in the header when logged out', async () => {
+    vi.stubGlobal('fetch', mockFetch({ authenticated: false }))
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    )
+
+    await screen.findByRole('heading', { name: 'e-Pharmacy' })
+    expect(screen.queryByText('Ada Shopper')).not.toBeInTheDocument()
   })
 
   it('clears the session when Log out is clicked', async () => {

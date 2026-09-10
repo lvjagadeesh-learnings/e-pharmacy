@@ -39,14 +39,26 @@
 #app-header h1 {
   margin: 0;
   font-size: var(--font-size-lg);
+}
+
+#app-header h1 a {
   color: var(--gradient-header-on);
+  text-decoration: none;
+  padding: 0;
 }
 
 #app-header p {
   margin: 0;
   color: rgba(255, 255, 255, 0.85);
   font-size: var(--font-size-sm);
-  flex-basis: 100%;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
 }
 
 #app-header nav,
@@ -75,6 +87,33 @@
 
 #app-header a[data-testid='cart-badge']:hover {
   background: #e08a3c;
+}
+
+.cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-primary-on, #fff);
+  color: var(--color-accent);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.header-username {
+  color: var(--gradient-header-on);
+  font-weight: 600;
 }
 
 #app-header button {
