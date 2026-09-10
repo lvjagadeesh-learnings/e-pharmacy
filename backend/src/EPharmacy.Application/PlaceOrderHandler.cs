@@ -17,17 +17,20 @@ public sealed class PlaceOrderHandler
     private readonly IMedicineRepository _medicineRepository;
     private readonly IPaymentGateway _paymentGateway;
     private readonly IOrderRepository _orderRepository;
+    private readonly IUserRepository _userRepository;
 
     public PlaceOrderHandler(
         ICartRepository cartRepository,
         IMedicineRepository medicineRepository,
         IPaymentGateway paymentGateway,
-        IOrderRepository orderRepository)
+        IOrderRepository orderRepository,
+        IUserRepository userRepository)
     {
         _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
         _medicineRepository = medicineRepository ?? throw new ArgumentNullException(nameof(medicineRepository));
         _paymentGateway = paymentGateway ?? throw new ArgumentNullException(nameof(paymentGateway));
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
     public async Task<PlaceOrderResult> HandleAsync(
@@ -54,6 +57,16 @@ public sealed class PlaceOrderHandler
             }
 
             orderItems.Add(new OrderItem(medicine.Id, medicine.Name, medicine.PriceCents, item.Quantity));
+        }
+
+        // e-Pharmacy Plus members get 10% off every line item (see story 12), applied to the
+        // snapshotted unit price so it flows through to both the charge and the stored order.
+        var user = await _userRepository.FindByIdAsync(userId, cancellationToken);
+        if (user?.IsMember == true)
+        {
+            orderItems = orderItems
+                .Select(item => item with { UnitPriceCents = item.UnitPriceCents - item.UnitPriceCents / 10 })
+                .ToList();
         }
 
         var totalCents = orderItems.Sum(item => item.UnitPriceCents * item.Quantity);
