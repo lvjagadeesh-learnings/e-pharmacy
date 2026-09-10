@@ -28,7 +28,7 @@
 
 #app-header {
   padding: var(--space-6) var(--space-4) var(--space-2);
-  background: var(--color-surface);
+  background: var(--gradient-header);
   border-bottom: 1px solid var(--color-border);
   display: flex;
   flex-wrap: wrap;
@@ -39,11 +39,12 @@
 #app-header h1 {
   margin: 0;
   font-size: var(--font-size-lg);
+  color: var(--gradient-header-on);
 }
 
 #app-header p {
   margin: 0;
-  color: var(--color-text-muted);
+  color: rgba(255, 255, 255, 0.85);
   font-size: var(--font-size-sm);
   flex-basis: 100%;
 }
@@ -52,6 +53,43 @@
 #app-header a,
 #app-header button {
   font-size: var(--font-size-sm);
+}
+
+#app-header a {
+  color: var(--gradient-header-on);
+  text-decoration: none;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+#app-header a:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+#app-header a[data-testid='cart-badge'] {
+  background: var(--color-accent);
+  font-weight: 600;
+}
+
+#app-header a[data-testid='cart-badge']:hover {
+  background: #e08a3c;
+}
+
+#app-header button {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--gradient-header-on);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+#app-header button:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
 }
 
 #app-main {
@@ -76,6 +114,8 @@
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color var(--transition-fast), transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .button:disabled {
@@ -90,6 +130,8 @@
 
 .button--primary:hover:not(:disabled) {
   background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
 }
 
 .button--secondary {
@@ -100,6 +142,12 @@
 
 .button--secondary:hover:not(:disabled) {
   background: var(--color-bg);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 /* Shared form fields */
@@ -125,6 +173,13 @@
   font-size: var(--font-size-base);
   background: var(--color-surface);
   color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px rgba(45, 108, 223, 0.2);
 }
 
 .field__error,
@@ -141,9 +196,36 @@
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color-secondary);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: var(--space-4);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  margin-bottom: var(--space-3);
+}
+
+.card a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.card a:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
 }
 
 .orders-list {

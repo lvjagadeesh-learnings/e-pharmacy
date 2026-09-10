@@ -17,6 +17,8 @@
   --color-error: #c22a3a;
   --color-error-on: #ffffff;
   --color-error-bg: #fdecee;
+  --color-accent: #f2994a;
+  --color-accent-2: #863bff;
 
   --color-bg: #f7f9f8;
   --color-surface: #ffffff;
@@ -24,6 +26,13 @@
   --color-text: #1f2a2d;
   --color-text-muted: #5b6b6e;
   --color-focus: #2d6cdf;
+
+  --gradient-header: linear-gradient(135deg, #0f6e63 0%, #2d6cdf 100%);
+  --gradient-header-on: #ffffff;
+
+  /* Motion */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
 
   /* Spacing (4px base) */
   --space-1: 4px;
@@ -45,4 +54,5 @@
   /* Shape */
   --radius: 8px;
   --shadow: 0 4px 10px rgba(15, 42, 45, 0.08);
+  --shadow-hover: 0 10px 24px rgba(15, 42, 45, 0.16);
 }
