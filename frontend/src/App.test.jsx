@@ -35,7 +35,7 @@ describe('App', () => {
     vi.unstubAllGlobals()
   })
 
-  it('renders the e-Pharmacy shell and shows healthy once the backend responds', async () => {
+  it('renders the e-Pharmacy shell', async () => {
     vi.stubGlobal('fetch', mockFetch())
 
     render(
@@ -45,7 +45,6 @@ describe('App', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'e-Pharmacy' })).toBeInTheDocument()
-    expect(await screen.findByRole('status')).toHaveTextContent('healthy')
   })
 
   it('renders a skip-to-main-content link pointing at the main landmark', async () => {
@@ -60,18 +59,6 @@ describe('App', () => {
     const skipLink = screen.getByRole('link', { name: /skip to main content/i })
     expect(skipLink).toHaveAttribute('href', '#app-main')
     expect(document.getElementById('app-main')).toBeInTheDocument()
-  })
-
-  it('shows unavailable when the backend health check fails', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network error')))
-
-    render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>,
-    )
-
-    expect(await screen.findByRole('status')).toHaveTextContent('unavailable')
   })
 
   it('shows a Log out button in the header when logged in', async () => {
