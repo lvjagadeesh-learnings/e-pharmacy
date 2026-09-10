@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/useCart'
 
 const priceFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+const QUANTITY_COMMIT_DELAY_MS = 400
 
 function formatPrice(priceCents) {
   return priceFormatter.format(priceCents / 100)
@@ -12,6 +13,8 @@ function CartPage() {
   const { refreshCount } = useCart()
   const [cart, setCart] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [quantityDrafts, setQuantityDrafts] = useState({})
+  const commitTimers = useRef({})
 
   const loadCart = useCallback(() => {
     setLoading(true)
@@ -44,7 +47,14 @@ function CartPage() {
     }
   }, [])
 
-  async function handleQuantityChange(medicineId, quantity) {
+  useEffect(() => {
+    const timers = commitTimers.current
+    return () => {
+      Object.values(timers).forEach(clearTimeout)
+    }
+  }, [])
+
+  async function commitQuantityChange(medicineId, quantity) {
     await fetch(`/api/cart/items/${medicineId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -52,6 +62,24 @@ function CartPage() {
     })
     await loadCart()
     await refreshCount()
+    setQuantityDrafts((prev) => {
+      const rest = { ...prev }
+      delete rest[medicineId]
+      return rest
+    })
+  }
+
+  function handleQuantityChange(medicineId, quantity) {
+    setQuantityDrafts((prev) => ({ ...prev, [medicineId]: quantity }))
+
+    if (commitTimers.current[medicineId]) {
+      clearTimeout(commitTimers.current[medicineId])
+    }
+
+    commitTimers.current[medicineId] = setTimeout(() => {
+      delete commitTimers.current[medicineId]
+      commitQuantityChange(medicineId, quantity)
+    }, QUANTITY_COMMIT_DELAY_MS)
   }
 
   async function handleRemove(medicineId) {
@@ -102,7 +130,7 @@ function CartPage() {
                   className="field__input"
                   type="number"
                   min="0"
-                  value={line.quantity}
+                  value={quantityDrafts[line.medicineId] ?? line.quantity}
                   aria-label={`Quantity for ${line.name}`}
                   onChange={(event) => handleQuantityChange(line.medicineId, Number(event.target.value))}
                 />

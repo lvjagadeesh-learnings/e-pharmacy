@@ -75,9 +75,15 @@ describe('OrderConfirmationPage', () => {
   })
 
   it('shows a not-found message when the order cannot be loaded', async () => {
-    renderOrderConfirmationPage({ ok: false, json: () => Promise.resolve(null) })
+    renderOrderConfirmationPage({ ok: false, status: 404, json: () => Promise.resolve(null) })
 
     expect(await screen.findByText(/couldn't find that order/)).toBeInTheDocument()
+  })
+
+  it('shows a distinct error message when the order request fails', async () => {
+    renderOrderConfirmationPage({ ok: false, status: 500, json: () => Promise.resolve(null) })
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't load this order/)
   })
 
   it('shows the status timeline', async () => {

@@ -63,4 +63,10 @@ describe('OrdersPage', () => {
 
     expect(await screen.findByText(/haven't placed any orders yet/)).toBeInTheDocument()
   })
+
+  it('shows a distinct error message when the orders request fails', async () => {
+    renderOrdersPage({ ok: false, status: 500, json: () => Promise.resolve(null) })
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't load your orders/)
+  })
 })

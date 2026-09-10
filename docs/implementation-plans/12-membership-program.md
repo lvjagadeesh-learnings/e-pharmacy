@@ -101,33 +101,35 @@ public sealed class JoinMembershipHandler
 
 ## File Changes
 
-- [ ] `backend/src/EPharmacy.Domain/User.cs` — add `IsMember`, `MembershipJoinedAtUtc`, `JoinMembership(...)`
-- [ ] `backend/tests/EPharmacy.Domain.Tests/UserTests.cs` — tests for `JoinMembership` (sets fields, throws if already a member)
-- [ ] `backend/src/EPharmacy.Application/IUserRepository.cs` — add `SaveAsync`
-- [ ] `backend/src/EPharmacy.Application/JoinMembershipHandler.cs` — new
-- [ ] `backend/tests/EPharmacy.Application.Tests/JoinMembershipHandlerTests.cs` — new (success, already-member, payment-declined)
-- [ ] `backend/src/EPharmacy.Application/PlaceOrderHandler.cs` — inject `IUserRepository`, apply 10% discount for members
-- [ ] `backend/tests/EPharmacy.Application.Tests/PlaceOrderHandlerTests.cs` — update constructor calls; add a member-discount test
-- [ ] `backend/src/EPharmacy.Infrastructure/UserRepository.cs` — implement `SaveAsync`
-- [ ] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — EF config for the two new `User` properties
-- [ ] `backend/src/EPharmacy.Infrastructure/Migrations/*` — new migration `AddMembershipToUser`
-- [ ] `backend/src/EPharmacy.Api/Endpoints/AuthEndpoints.cs` — include `isMember`/`membershipJoinedAtUtc` in `/me`, register, login responses
-- [ ] `backend/src/EPharmacy.Api/Endpoints/MembershipEndpoints.cs` — new, `POST /api/membership/join`
-- [ ] `backend/src/EPharmacy.Api/Program.cs` — DI registrations + `app.MapMembershipEndpoints()`
-- [ ] `frontend/src/pages/MembershipPage.jsx` — new
-- [ ] `frontend/src/pages/MembershipPage.test.jsx` — new
-- [ ] `frontend/src/App.jsx` — add `/membership` route + header nav link
-- [ ] `frontend/src/App.test.jsx` (if present) — update for new nav link if it asserts header contents
+- [x] `backend/src/EPharmacy.Domain/User.cs` — add `IsMember`, `MembershipJoinedAtUtc`, `JoinMembership(...)`
+- [x] `backend/tests/EPharmacy.Domain.Tests/UserTests.cs` — tests for `JoinMembership` (sets fields, throws if already a member)
+- [x] `backend/src/EPharmacy.Application/IUserRepository.cs` — add `SaveAsync`
+- [x] `backend/src/EPharmacy.Application/JoinMembershipHandler.cs` — new
+- [x] `backend/tests/EPharmacy.Application.Tests/JoinMembershipHandlerTests.cs` — new (success, already-member, payment-declined)
+- [x] `backend/src/EPharmacy.Application/PlaceOrderHandler.cs` — inject `IUserRepository`, apply 10% discount for members
+- [x] `backend/tests/EPharmacy.Application.Tests/PlaceOrderHandlerTests.cs` — update constructor calls; add a member-discount test
+- [x] `backend/src/EPharmacy.Infrastructure/UserRepository.cs` — implement `SaveAsync`
+- [x] `backend/src/EPharmacy.Infrastructure/AppDbContext.cs` — EF config for the two new `User` properties
+- [x] `backend/src/EPharmacy.Infrastructure/Migrations/*` — new migration `AddMembershipToUser`
+- [x] `backend/src/EPharmacy.Api/Endpoints/AuthEndpoints.cs` — include `isMember`/`membershipJoinedAtUtc` in `/me`, register, login responses
+- [x] `backend/src/EPharmacy.Api/Endpoints/MembershipEndpoints.cs` — new, `POST /api/membership/join`
+- [x] `backend/src/EPharmacy.Api/Program.cs` — DI registrations + `app.MapMembershipEndpoints()`
+- [x] `frontend/src/pages/MembershipPage.jsx` — new
+- [x] `frontend/src/pages/MembershipPage.test.jsx` — new
+- [x] `frontend/src/App.jsx` — add `/membership` route + header nav link
+- [x] `frontend/src/App.test.jsx` (if present) — update for new nav link if it asserts header contents
+- [x] `backend/tests/EPharmacy.Api.Tests/MembershipEndpointTests.cs` — new (401 unauthenticated, success, duplicate-join 409, declined-payment 402)
+- [x] `backend/src/EPharmacy.Application/GetCartHandler.cs` — extend `CartDto` with `DiscountCents`/`TotalCents` so the cart and checkout pages show the member discount ahead of payment, not just the post-charge order total
 
 ## Task Breakdown
 
-1. [ ] Domain: `User.JoinMembership` + tests
-2. [ ] Application: `IUserRepository.SaveAsync` + `JoinMembershipHandler` + tests
-3. [ ] Application: member discount in `PlaceOrderHandler` + tests
-4. [ ] Infrastructure: EF config, migration, `UserRepository.SaveAsync`
-5. [ ] Api: `MembershipEndpoints`, `/me` response fields, `Program.cs` wiring
-6. [ ] Frontend: `MembershipPage`, route, nav link, `AuthContext` refresh-on-join
-7. [ ] Verify: backend `dotnet test`, frontend `npm run test`/`build`/lint; commit
+1. [x] Domain: `User.JoinMembership` + tests
+2. [x] Application: `IUserRepository.SaveAsync` + `JoinMembershipHandler` + tests
+3. [x] Application: member discount in `PlaceOrderHandler` + tests
+4. [x] Infrastructure: EF config, migration, `UserRepository.SaveAsync`
+5. [x] Api: `MembershipEndpoints`, `/me` response fields, `Program.cs` wiring
+6. [x] Frontend: `MembershipPage`, route, nav link, `AuthContext` refresh-on-join
+7. [x] Verify: backend `dotnet test`, frontend `npm run test`/`build`/lint; commit
 
 ## Commit Plan
 

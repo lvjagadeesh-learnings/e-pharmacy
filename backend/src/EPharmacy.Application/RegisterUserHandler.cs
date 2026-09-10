@@ -27,7 +27,14 @@ public sealed class RegisterUserHandler
         var passwordHash = _passwordHasher.Hash(password);
         var user = User.Create(Guid.NewGuid(), email, passwordHash, displayName, DateTimeOffset.UtcNow);
 
-        await _userRepository.AddAsync(user, cancellationToken);
+        try
+        {
+            await _userRepository.AddAsync(user, cancellationToken);
+        }
+        catch (DuplicateEmailException)
+        {
+            return RegisterUserResult.Failure("An account with this email already exists.");
+        }
 
         return RegisterUserResult.Success(user);
     }

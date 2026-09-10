@@ -9,17 +9,24 @@ function formatPrice(priceCents) {
 function OrdersPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     fetch('/api/orders')
-      .then((response) => (response.ok ? response.json() : []))
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to load orders')
+        return response.json()
+      })
       .then((data) => {
-        if (!cancelled) setOrders(data ?? [])
-        if (!cancelled) setLoading(false)
+        if (cancelled) return
+        setOrders(data ?? [])
+        setLoading(false)
       })
       .catch(() => {
-        if (!cancelled) setLoading(false)
+        if (cancelled) return
+        setLoadError(true)
+        setLoading(false)
       })
     return () => {
       cancelled = true
@@ -31,6 +38,15 @@ function OrdersPage() {
       <div className="page-container">
         <h2>Your orders</h2>
         <p>Loading your orders…</p>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="page-container">
+        <h2>Your orders</h2>
+        <p role="alert">We couldn&apos;t load your orders right now. Please try again.</p>
       </div>
     )
   }

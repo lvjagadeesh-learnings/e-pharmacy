@@ -13,6 +13,17 @@ const singleLineCart = {
     { medicineId: 'm1', name: 'Paracetamol 500mg', priceCents: 599, quantity: 2, lineTotalCents: 1198 },
   ],
   subtotalCents: 1198,
+  discountCents: 0,
+  totalCents: 1198,
+}
+
+const memberCartWithDiscount = {
+  lines: [
+    { medicineId: 'm1', name: 'Paracetamol 500mg', priceCents: 599, quantity: 2, lineTotalCents: 1198 },
+  ],
+  subtotalCents: 1198,
+  discountCents: 118,
+  totalCents: 1080,
 }
 
 function mockFetch({ cart, checkoutResponse }) {
@@ -30,7 +41,7 @@ function mockFetch({ cart, checkoutResponse }) {
     }
 
     if (url === '/api/checkout' && options?.method === 'POST') {
-      return Promise.resolve(checkoutResponse)
+      return typeof checkoutResponse === 'function' ? checkoutResponse() : Promise.resolve(checkoutResponse)
     }
 
     return Promise.resolve({ ok: false, json: () => Promise.resolve(null) })
@@ -108,6 +119,36 @@ describe('CheckoutPage', () => {
     await person.click(screen.getByRole('button', { name: 'Pay now' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('The card was declined.')
+    expect(screen.getByLabelText('Shipping address')).toHaveValue('1 Example St')
+  })
+
+  it('shows the membership discount and discounted total for a member', async () => {
+    renderCheckoutPage({
+      cart: memberCartWithDiscount,
+      checkoutResponse: { status: 201, json: () => Promise.resolve({}) },
+    })
+
+    expect(await screen.findByText(/Paracetamol 500mg/)).toBeInTheDocument()
+    expect(screen.getByTestId('checkout-subtotal')).toHaveTextContent('Subtotal: $11.98')
+    expect(screen.getByTestId('checkout-discount')).toHaveTextContent('Membership discount: -$1.18')
+    expect(screen.getByTestId('checkout-total')).toHaveTextContent('Total: $10.80')
+  })
+
+  it('shows an error and preserves the form when the checkout request fails outright', async () => {
+    renderCheckoutPage({
+      cart: singleLineCart,
+      checkoutResponse: () => Promise.reject(new Error('Network error')),
+    })
+    const person = userEvent.setup()
+
+    await screen.findByLabelText('Shipping address')
+    await person.type(screen.getByLabelText('Shipping address'), '1 Example St')
+    await person.type(screen.getByLabelText('Card number'), '4111111111111111')
+    await person.type(screen.getByLabelText('Expiry'), '12/30')
+    await person.type(screen.getByLabelText('CVC'), '123')
+    await person.click(screen.getByRole('button', { name: 'Pay now' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Checkout failed. Please try again.')
     expect(screen.getByLabelText('Shipping address')).toHaveValue('1 Example St')
   })
 })

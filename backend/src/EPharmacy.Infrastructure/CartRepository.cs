@@ -26,7 +26,21 @@ public sealed class CartRepository : ICartRepository
 
         cart = Cart.CreateEmpty(Guid.NewGuid(), userId);
         _dbContext.Carts.Add(cart);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+            // The unique index on UserId caught a concurrent request that created the cart first;
+            // drop our speculative insert and return the one that actually won.
+            _dbContext.Entry(cart).State = EntityState.Detached;
+            return await _dbContext.Carts
+                .Include(c => c.Items)
+                .FirstAsync(c => c.UserId == userId, cancellationToken);
+        }
+
         return cart;
     }
 

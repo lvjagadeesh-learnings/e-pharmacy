@@ -22,7 +22,17 @@ public sealed class UserRepository : IUserRepository
     public async Task AddAsync(User user, CancellationToken cancellationToken)
     {
         _dbContext.Users.Add(user);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+            // The unique index on Email caught a registration that raced past the caller's
+            // pre-check; surface it as a typed conflict instead of an unhandled 500.
+            throw new DuplicateEmailException();
+        }
     }
 
     public async Task SaveAsync(User user, CancellationToken cancellationToken)

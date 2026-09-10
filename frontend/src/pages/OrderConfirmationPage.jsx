@@ -10,19 +10,27 @@ function OrderConfirmationPage() {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [receiving, setReceiving] = useState(false)
   const [receiveError, setReceiveError] = useState(null)
 
   useEffect(() => {
     let cancelled = false
     fetch(`/api/orders/${orderId}`)
-      .then((response) => (response.ok ? response.json() : null))
+      .then((response) => {
+        if (response.ok) return response.json()
+        if (response.status === 404) return null
+        throw new Error('Failed to load order')
+      })
       .then((data) => {
-        if (!cancelled && data) setOrder(data)
-        if (!cancelled) setLoading(false)
+        if (cancelled) return
+        setOrder(data)
+        setLoading(false)
       })
       .catch(() => {
-        if (!cancelled) setLoading(false)
+        if (cancelled) return
+        setLoadError(true)
+        setLoading(false)
       })
     return () => {
       cancelled = true
@@ -56,6 +64,16 @@ function OrderConfirmationPage() {
       <div className="page-container">
         <h2>Order confirmation</h2>
         <p>Loading your order…</p>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="page-container">
+        <h2>Order confirmation</h2>
+        <p role="alert">We couldn&apos;t load this order right now. Please try again.</p>
+        <Link to="/">Back to catalog</Link>
       </div>
     )
   }

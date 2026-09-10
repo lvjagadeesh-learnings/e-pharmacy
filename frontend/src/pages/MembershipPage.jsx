@@ -31,6 +31,8 @@ function MembershipPage() {
       }
 
       updateUser({ isMember: true, membershipJoinedAtUtc: body.membershipJoinedAtUtc })
+    } catch {
+      setError('Unable to join right now. Please try again.')
     } finally {
       setSubmitting(false)
     }

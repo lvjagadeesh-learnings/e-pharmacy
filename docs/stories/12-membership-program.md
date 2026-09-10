@@ -1,6 +1,6 @@
 # User Story: 12 — View and join a membership tier
 
-**Status:** ready
+**Status:** done
 
 **As a** registered user,
 **I want** to see membership tier/benefits and join or view my membership status,
@@ -8,10 +8,10 @@
 
 ## Acceptance Criteria
 
-- [ ] A membership page explains the single "e-Pharmacy Plus" tier and its benefit (10% off every order), and is visible to anyone (logged out or in)
-- [ ] A logged-in user who is not yet a member sees a "Join" form (simulated payment, same convention as checkout) and, on success, becomes a member immediately
-- [ ] A logged-in member sees their membership status (member since date) instead of the join form
-- [ ] Once a user is a member, their order totals at checkout reflect the 10% discount
+- [x] A membership page explains the single "e-Pharmacy Plus" tier and its benefit (10% off every order), and is visible to anyone (logged out or in)
+- [x] A logged-in user who is not yet a member sees a "Join" form (simulated payment, same convention as checkout) and, on success, becomes a member immediately
+- [x] A logged-in member sees their membership status (member since date) instead of the join form
+- [x] Once a user is a member, their order totals at checkout reflect the 10% discount
 
 ## Notes
 

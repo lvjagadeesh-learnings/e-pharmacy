@@ -15,12 +15,15 @@ public class GetCartHandlerTests
         var cartRepository = new Mock<ICartRepository>();
         cartRepository.Setup(r => r.GetOrCreateForUserAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(cart);
         var medicineRepository = new Mock<IMedicineRepository>();
-        var handler = new GetCartHandler(cartRepository.Object, medicineRepository.Object);
+        var userRepository = new Mock<IUserRepository>();
+        var handler = new GetCartHandler(cartRepository.Object, medicineRepository.Object, userRepository.Object);
 
         var result = await handler.HandleAsync(userId, CancellationToken.None);
 
         result.Lines.Should().BeEmpty();
         result.SubtotalCents.Should().Be(0);
+        result.DiscountCents.Should().Be(0);
+        result.TotalCents.Should().Be(0);
     }
 
     [Fact]
@@ -40,7 +43,8 @@ public class GetCartHandlerTests
         var medicineRepository = new Mock<IMedicineRepository>();
         medicineRepository.Setup(r => r.FindByIdAsync(firstMedicineId, It.IsAny<CancellationToken>())).ReturnsAsync(firstMedicine);
         medicineRepository.Setup(r => r.FindByIdAsync(secondMedicineId, It.IsAny<CancellationToken>())).ReturnsAsync(secondMedicine);
-        var handler = new GetCartHandler(cartRepository.Object, medicineRepository.Object);
+        var userRepository = new Mock<IUserRepository>();
+        var handler = new GetCartHandler(cartRepository.Object, medicineRepository.Object, userRepository.Object);
 
         var result = await handler.HandleAsync(userId, CancellationToken.None);
 
@@ -58,5 +62,34 @@ public class GetCartHandlerTests
             line.Quantity == 1 &&
             line.LineTotalCents == 799);
         result.SubtotalCents.Should().Be(1997);
+        result.DiscountCents.Should().Be(0);
+        result.TotalCents.Should().Be(1997);
+    }
+
+    [Fact]
+    public async Task HandleAsync_applies_the_same_per_unit_member_discount_as_checkout()
+    {
+        var userId = Guid.NewGuid();
+        var medicineId = Guid.NewGuid();
+        var medicine = Medicine.Create(medicineId, "Paracetamol 500mg", "Pain and fever relief tablets.", 599, null);
+        var cart = Cart.CreateEmpty(Guid.NewGuid(), userId);
+        cart.AddItem(medicineId, 2);
+        var member = User.Create(userId, "member@example.com", "hashed-password", "Ada Member", DateTimeOffset.UtcNow);
+        member.JoinMembership(DateTimeOffset.UtcNow);
+
+        var cartRepository = new Mock<ICartRepository>();
+        cartRepository.Setup(r => r.GetOrCreateForUserAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(cart);
+        var medicineRepository = new Mock<IMedicineRepository>();
+        medicineRepository.Setup(r => r.FindByIdAsync(medicineId, It.IsAny<CancellationToken>())).ReturnsAsync(medicine);
+        var userRepository = new Mock<IUserRepository>();
+        userRepository.Setup(r => r.FindByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(member);
+        var handler = new GetCartHandler(cartRepository.Object, medicineRepository.Object, userRepository.Object);
+
+        var result = await handler.HandleAsync(userId, CancellationToken.None);
+
+        // 2 x 599 = 1198 at full price; 10% off each unit (599 - 59 = 540) => 1080, matching PlaceOrderHandler.
+        result.SubtotalCents.Should().Be(1198);
+        result.TotalCents.Should().Be(1080);
+        result.DiscountCents.Should().Be(118);
     }
 }

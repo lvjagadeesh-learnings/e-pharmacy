@@ -59,6 +59,13 @@ public sealed class PlaceOrderHandler
             orderItems.Add(new OrderItem(medicine.Id, medicine.Name, medicine.PriceCents, item.Quantity));
         }
 
+        // Every cart item resolved to a since-deleted medicine (a stale cart) — treat the same as
+        // an empty cart instead of charging 0 and letting Order.Create reject an item-less order.
+        if (orderItems.Count == 0)
+        {
+            return new PlaceOrderResult(PlaceOrderStatus.EmptyCart, null, 0, null);
+        }
+
         // e-Pharmacy Plus members get 10% off every line item (see story 12), applied to the
         // snapshotted unit price so it flows through to both the charge and the stored order.
         var user = await _userRepository.FindByIdAsync(userId, cancellationToken);

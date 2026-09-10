@@ -51,6 +51,28 @@ public class RegisterUserHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_fails_gracefully_when_a_concurrent_registration_wins_the_race_on_the_same_email()
+    {
+        var userRepository = new Mock<IUserRepository>();
+        userRepository
+            .Setup(r => r.FindByEmailAsync("shopper@example.com", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+        userRepository
+            .Setup(r => r.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new DuplicateEmailException());
+
+        var passwordHasher = new Mock<IPasswordHasher>();
+        passwordHasher.Setup(h => h.Hash("s3cret!")).Returns("hashed-s3cret");
+
+        var handler = new RegisterUserHandler(userRepository.Object, passwordHasher.Object);
+
+        var result = await handler.HandleAsync("shopper@example.com", "s3cret!", "Ada Shopper", CancellationToken.None);
+
+        result.Succeeded.Should().BeFalse();
+        result.Error.Should().Be("An account with this email already exists.");
+    }
+
+    [Fact]
     public void Constructor_rejects_a_null_user_repository()
     {
         var act = () => new RegisterUserHandler(null!, new Mock<IPasswordHasher>().Object);

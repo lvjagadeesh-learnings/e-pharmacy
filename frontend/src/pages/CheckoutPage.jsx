@@ -52,6 +52,8 @@ function CheckoutPage() {
 
       const body = await response.json().catch(() => null)
       setError(body?.error ?? 'Checkout failed. Please try again.')
+    } catch {
+      setError('Checkout failed. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -85,7 +87,11 @@ function CheckoutPage() {
           </li>
         ))}
       </ul>
-      <p data-testid="checkout-subtotal">Total: {formatPrice(cart.subtotalCents)}</p>
+      <p data-testid="checkout-subtotal">Subtotal: {formatPrice(cart.subtotalCents)}</p>
+      {cart.discountCents > 0 && (
+        <p data-testid="checkout-discount">Membership discount: -{formatPrice(cart.discountCents)}</p>
+      )}
+      <p data-testid="checkout-total">Total: {formatPrice(cart.totalCents)}</p>
 
       {error && (
         <p role="alert" aria-live="polite" className="form-error">

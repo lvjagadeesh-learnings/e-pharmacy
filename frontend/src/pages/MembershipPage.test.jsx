@@ -80,5 +80,37 @@ describe('MembershipPage', () => {
 
       await waitFor(() => expect(screen.getByTestId('membership-status')).toBeInTheDocument())
     })
+
+    it('shows an error and preserves the form when the join request fails outright', async () => {
+      const user = { id: 'u1', email: 'ada@example.com', displayName: 'Ada', isMember: false }
+      globalThis.fetch = vi.fn((url, options) => {
+        if (url === '/api/auth/me') {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve(user) })
+        }
+        if (url === '/api/membership/join' && options?.method === 'POST') {
+          return Promise.reject(new Error('Network error'))
+        }
+        return Promise.resolve({ ok: false, json: () => Promise.resolve(null) })
+      })
+
+      render(
+        <MemoryRouter>
+          <AuthProvider>
+            <MembershipPage />
+          </AuthProvider>
+        </MemoryRouter>,
+      )
+
+      await waitFor(() => expect(screen.getByRole('button', { name: /join e-pharmacy plus/i })).toBeInTheDocument())
+
+      const events = userEvent.setup()
+      await events.type(screen.getByLabelText(/card number/i), '4111111111111111')
+      await events.type(screen.getByLabelText(/expiry/i), '12/30')
+      await events.type(screen.getByLabelText(/cvc/i), '123')
+      await events.click(screen.getByRole('button', { name: /join e-pharmacy plus/i }))
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('Unable to join right now. Please try again.')
+      expect(screen.getByLabelText(/card number/i)).toHaveValue('4111111111111111')
+    })
   })
 })

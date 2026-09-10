@@ -15,3 +15,9 @@ public interface IUserRepository
 
     Task SaveAsync(User user, CancellationToken cancellationToken);
 }
+
+/// <summary>
+/// Thrown by <see cref="IUserRepository.AddAsync"/> when a concurrent registration already
+/// claimed the same email between the caller's pre-check and the insert.
+/// </summary>
+public sealed class DuplicateEmailException : Exception;
