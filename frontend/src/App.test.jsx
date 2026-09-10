@@ -86,6 +86,35 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: 'Log out' })).not.toBeInTheDocument()
   })
 
+  it('shows Log in and Sign up links in the header when logged out', async () => {
+    vi.stubGlobal('fetch', mockFetch({ authenticated: false }))
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByRole('link', { name: 'Log in' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Sign up' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Orders' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Cart/ })).not.toBeInTheDocument()
+  })
+
+  it('hides Log in and Sign up links in the header when logged in', async () => {
+    vi.stubGlobal('fetch', mockFetch({ authenticated: true }))
+
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>,
+    )
+
+    await screen.findByRole('button', { name: 'Log out' })
+    expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Sign up' })).not.toBeInTheDocument()
+  })
+
   it('clears the session when Log out is clicked', async () => {
     const fetchMock = mockFetch({ authenticated: true })
     vi.stubGlobal('fetch', fetchMock)

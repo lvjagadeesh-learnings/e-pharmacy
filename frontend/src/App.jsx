@@ -31,7 +31,7 @@ function AppHeader() {
       <h1>e-Pharmacy</h1>
       <p>Your trusted online pharmacy</p>
       <Link to="/membership">Membership</Link>
-      {user && (
+      {user ? (
         <>
           <Link to="/orders">Orders</Link>
           <Link to="/cart" data-testid="cart-badge">
@@ -40,6 +40,11 @@ function AppHeader() {
           <button type="button" onClick={handleLogout}>
             Log out
           </button>
+        </>
+      ) : (
+        <>
+          <Link to="/login">Log in</Link>
+          <Link to="/signup">Sign up</Link>
         </>
       )}
     </header>
