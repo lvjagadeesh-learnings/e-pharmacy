@@ -72,6 +72,14 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Dev-only convenience: the dev SQLite file lives under a OneDrive-synced
+    // folder, and OneDrive's file locking is incompatible with SQLite's default
+    // WAL journal mode (its shared -wal/-shm sidecar files trigger "disk I/O
+    // error"). Force the classic rollback-journal mode instead, which only
+    // needs the single .db file.
+    dbContext.Database.ExecuteSqlRaw("PRAGMA journal_mode='DELETE';");
+
     dbContext.Database.Migrate();
 
     // Dev-only convenience: seed a fixed set of sample medicines if the
@@ -80,12 +88,12 @@ using (var scope = app.Services.CreateScope())
     if (!dbContext.Medicines.Any())
     {
         dbContext.Medicines.AddRange(
-            Medicine.Create(Guid.NewGuid(), "Paracetamol 500mg", "Pain and fever relief tablets, 20 count.", 599, null),
-            Medicine.Create(Guid.NewGuid(), "Ibuprofen 200mg", "Anti-inflammatory pain relief tablets, 24 count.", 749, null),
-            Medicine.Create(Guid.NewGuid(), "Allergy Relief 10mg", "Non-drowsy antihistamine tablets, 30 count.", 899, null),
-            Medicine.Create(Guid.NewGuid(), "Vitamin C 1000mg", "Immune support supplement, 60 tablets.", 1099, null),
-            Medicine.Create(Guid.NewGuid(), "Cough Syrup 100ml", "Soothing relief for dry and chesty coughs.", 649, null),
-            Medicine.Create(Guid.NewGuid(), "Multivitamin Daily", "Complete daily multivitamin, 90 tablets.", 1299, null));
+            Medicine.Create(Guid.NewGuid(), "Paracetamol 500mg", "Pain and fever relief tablets, 20 count.", 599, "/medicines/paracetamol.svg"),
+            Medicine.Create(Guid.NewGuid(), "Ibuprofen 200mg", "Anti-inflammatory pain relief tablets, 24 count.", 749, "/medicines/ibuprofen.svg"),
+            Medicine.Create(Guid.NewGuid(), "Allergy Relief 10mg", "Non-drowsy antihistamine tablets, 30 count.", 899, "/medicines/allergy-relief.svg"),
+            Medicine.Create(Guid.NewGuid(), "Vitamin C 1000mg", "Immune support supplement, 60 tablets.", 1099, "/medicines/vitamin-c.svg"),
+            Medicine.Create(Guid.NewGuid(), "Cough Syrup 100ml", "Soothing relief for dry and chesty coughs.", 649, "/medicines/cough-syrup.svg"),
+            Medicine.Create(Guid.NewGuid(), "Multivitamin Daily", "Complete daily multivitamin, 90 tablets.", 1299, "/medicines/multivitamin.svg"));
 
         dbContext.SaveChanges();
     }
