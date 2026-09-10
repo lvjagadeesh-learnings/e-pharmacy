@@ -50,4 +50,36 @@ public class UserTests
 
         act.Should().Throw<ArgumentException>();
     }
+
+    [Fact]
+    public void Create_defaults_to_not_a_member()
+    {
+        var user = User.Create(Guid.NewGuid(), "shopper@example.com", "hashed-password", "Ada Shopper", DateTimeOffset.UtcNow);
+
+        user.IsMember.Should().BeFalse();
+        user.MembershipJoinedAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public void JoinMembership_marks_the_user_as_a_member()
+    {
+        var user = User.Create(Guid.NewGuid(), "shopper@example.com", "hashed-password", "Ada Shopper", DateTimeOffset.UtcNow);
+        var joinedAtUtc = DateTimeOffset.UtcNow;
+
+        user.JoinMembership(joinedAtUtc);
+
+        user.IsMember.Should().BeTrue();
+        user.MembershipJoinedAtUtc.Should().Be(joinedAtUtc);
+    }
+
+    [Fact]
+    public void JoinMembership_throws_if_already_a_member()
+    {
+        var user = User.Create(Guid.NewGuid(), "shopper@example.com", "hashed-password", "Ada Shopper", DateTimeOffset.UtcNow);
+        user.JoinMembership(DateTimeOffset.UtcNow);
+
+        var act = () => user.JoinMembership(DateTimeOffset.UtcNow);
+
+        act.Should().Throw<InvalidOperationException>();
+    }
 }

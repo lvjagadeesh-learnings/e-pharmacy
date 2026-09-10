@@ -12,4 +12,6 @@ public interface IUserRepository
     Task<User?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 
     Task AddAsync(User user, CancellationToken cancellationToken);
+
+    Task SaveAsync(User user, CancellationToken cancellationToken);
 }

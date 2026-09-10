@@ -24,6 +24,24 @@ public sealed class User
 
     public DateTimeOffset CreatedAtUtc { get; }
 
+    public bool IsMember { get; private set; }
+
+    public DateTimeOffset? MembershipJoinedAtUtc { get; private set; }
+
+    /// <summary>
+    /// Enrolls the user in the "e-Pharmacy Plus" membership program.
+    /// </summary>
+    public void JoinMembership(DateTimeOffset joinedAtUtc)
+    {
+        if (IsMember)
+        {
+            throw new InvalidOperationException("User is already a member.");
+        }
+
+        IsMember = true;
+        MembershipJoinedAtUtc = joinedAtUtc;
+    }
+
     public static User Create(Guid id, string email, string passwordHash, string displayName, DateTimeOffset createdAtUtc)
     {
         if (id == Guid.Empty)
