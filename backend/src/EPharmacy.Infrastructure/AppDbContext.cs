@@ -37,6 +37,8 @@ public sealed class AppDbContext : DbContext
             entity.Property(u => u.PasswordHash).IsRequired();
             entity.Property(u => u.DisplayName).IsRequired();
             entity.Property(u => u.CreatedAtUtc).IsRequired();
+            entity.Property(u => u.IsMember).IsRequired();
+            entity.Property(u => u.MembershipJoinedAtUtc).IsRequired(false);
         });
 
         modelBuilder.Entity<Medicine>(entity =>

@@ -41,6 +41,8 @@ builder.Services.AddScoped<GetOrderHandler>();
 builder.Services.AddScoped<ListOrdersHandler>();
 builder.Services.AddScoped<MarkOrderReceivedHandler>();
 
+builder.Services.AddScoped<JoinMembershipHandler>();
+
 // Cookie auth, not JWT: a same-origin SPA (via the Vite dev proxy) doesn't
 // need bearer tokens, and cookies let the browser handle session storage.
 // API redirects (401/403) are returned instead of the default login-page
@@ -111,6 +113,7 @@ app.MapAuthEndpoints();
 app.MapCatalogEndpoints();
 app.MapCartEndpoints();
 app.MapOrderEndpoints();
+app.MapMembershipEndpoints();
 
 app.Run();
 

@@ -24,4 +24,14 @@ public sealed class UserRepository : IUserRepository
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task SaveAsync(User user, CancellationToken cancellationToken)
+    {
+        if (_dbContext.Entry(user).State == EntityState.Detached)
+        {
+            _dbContext.Users.Update(user);
+        }
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

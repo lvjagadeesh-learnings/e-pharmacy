@@ -64,13 +64,12 @@ public static class AuthEndpoints
         })
         .WithName("LoginUser");
 
-        app.MapGet("/api/auth/me", (ClaimsPrincipal user) =>
+        app.MapGet("/api/auth/me", async (ClaimsPrincipal principal, IUserRepository userRepository, CancellationToken cancellationToken) =>
         {
-            var id = user.FindFirstValue(ClaimTypes.NameIdentifier);
-            var email = user.FindFirstValue(ClaimTypes.Email);
-            var displayName = user.FindFirstValue(DisplayNameClaimType);
+            var userId = Guid.Parse(principal.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var user = await userRepository.FindByIdAsync(userId, cancellationToken);
 
-            return Results.Ok(new { id, email, displayName });
+            return user is null ? Results.Unauthorized() : Results.Ok(ToUserResponse(user));
         })
         .RequireAuthorization()
         .WithName("GetCurrentUser");
@@ -103,6 +102,8 @@ public static class AuthEndpoints
         id = user.Id,
         email = user.Email,
         displayName = user.DisplayName,
+        isMember = user.IsMember,
+        membershipJoinedAtUtc = user.MembershipJoinedAtUtc,
     };
 }
 
